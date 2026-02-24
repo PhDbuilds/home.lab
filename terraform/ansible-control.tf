@@ -64,6 +64,8 @@ resource "proxmox_virtual_environment_vm" "ansible_control" {
       boot_order,
       cdrom,
       efi_disk,
+      started,
+      keyboard_layout,
     ]
   }
 }

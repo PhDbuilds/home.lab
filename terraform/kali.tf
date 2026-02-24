@@ -53,6 +53,9 @@ resource "proxmox_virtual_environment_vm" "kali" {
       disk,
       network_device,
       boot_order,
+      cdrom,
+      started,
+      keyboard_layout,
     ]
   }
 }

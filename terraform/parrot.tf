@@ -60,6 +60,8 @@ resource "proxmox_virtual_environment_vm" "parrot" {
       network_device,
       boot_order,
       cdrom,
+      started,
+      keyboard_layout,
     ]
   }
 }

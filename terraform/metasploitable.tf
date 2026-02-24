@@ -43,6 +43,9 @@ resource "proxmox_virtual_environment_vm" "metasploitable" {
       disk,
       network_device,
       boot_order,
+      cdrom,
+      started,
+      keyboard_layout,
     ]
   }
 }

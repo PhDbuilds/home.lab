@@ -81,6 +81,8 @@ resource "proxmox_virtual_environment_vm" "rhel9_nessus" {
       boot_order,
       cdrom,
       efi_disk,
+      started,
+      keyboard_layout,
     ]
   }
 }
