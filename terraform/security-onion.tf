@@ -51,6 +51,8 @@ resource "proxmox_virtual_environment_vm" "security_onion" {
       network_device,
       boot_order,
       cdrom,
+      started,
+      keyboard_layout,
     ]
   }
 }
