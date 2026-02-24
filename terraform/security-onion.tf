@@ -6,7 +6,7 @@
 #   net0 → vmbr0 (192.168.1.77 — management)
 #   net1 → vmbr1 (SPAN/mirror port — captures traffic)
 #
-# Import: terraform import proxmox_virtual_environment_vm.security_onion lab/qemu/107
+# Import: terraform import proxmox_virtual_environment_vm.security_onion lab/107
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "security_onion" {

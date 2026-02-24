@@ -8,7 +8,7 @@
 #
 # Note: UEFI (OVMF) with q35 machine type
 #
-# Import: terraform import proxmox_virtual_environment_vm.parrot lab/qemu/103
+# Import: terraform import proxmox_virtual_environment_vm.parrot lab/103
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "parrot" {

@@ -7,7 +7,7 @@
 #
 # Note: Uses IDE disk (not SCSI) — imported VM from OVA
 #
-# Import: terraform import proxmox_virtual_environment_vm.metasploitable lab/qemu/106
+# Import: terraform import proxmox_virtual_environment_vm.metasploitable lab/106
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "metasploitable" {

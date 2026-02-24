@@ -7,7 +7,7 @@
 #
 # Note: UEFI (OVMF) with q35 machine type, has EFI disk
 #
-# Import: terraform import proxmox_virtual_environment_vm.ansible_control lab/qemu/109
+# Import: terraform import proxmox_virtual_environment_vm.ansible_control lab/109
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "ansible_control" {

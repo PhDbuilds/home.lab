@@ -7,7 +7,7 @@
 #   LAN  → vmbr3 (192.168.50.0/24)  gateway 192.168.50.1
 #   OPT  → vmbr2 (10.0.0.0/24)      gateway 10.0.0.1
 #
-# Import: terraform import proxmox_virtual_environment_vm.pfsense lab/qemu/113
+# Import: terraform import proxmox_virtual_environment_vm.pfsense lab/113
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "pfsense" {

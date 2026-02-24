@@ -6,7 +6,7 @@
 #   net0 → vmbr0 (192.168.1.20 — prod/management)
 #   net1 → vmbr1 (vulnerable network)
 #
-# Import: terraform import proxmox_virtual_environment_vm.kali lab/qemu/116
+# Import: terraform import proxmox_virtual_environment_vm.kali lab/116
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "kali" {

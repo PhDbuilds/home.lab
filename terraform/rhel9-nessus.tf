@@ -9,7 +9,7 @@
 #
 # Note: UEFI (OVMF) with q35 machine type, has EFI disk
 #
-# Import: terraform import proxmox_virtual_environment_vm.rhel9_nessus lab/qemu/104
+# Import: terraform import proxmox_virtual_environment_vm.rhel9_nessus lab/104
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "rhel9_nessus" {
