@@ -18,10 +18,16 @@ resource "proxmox_virtual_environment_vm" "parrot" {
   on_boot   = false
   machine   = "q35"
   bios      = "ovmf"
+  scsi_hardware = "virtio-scsi-single"
   tags      = ["security", "jumphost", "terraform"]
 
   agent {
     enabled = true
+    type    = "virtio"
+  }
+
+  operating_system {
+    type = "l26"
   }
 
   cpu {

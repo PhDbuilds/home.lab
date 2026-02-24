@@ -22,6 +22,10 @@ resource "proxmox_virtual_environment_vm" "metasploitable" {
     sockets = 1
   }
 
+  operating_system {
+    type = "l26"
+  }
+
   memory {
     dedicated = 2048
   }

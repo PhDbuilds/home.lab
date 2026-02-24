@@ -14,12 +14,17 @@ resource "proxmox_virtual_environment_vm" "kali" {
   node_name = "lab"
   vm_id     = 116
   on_boot   = false
+  scsi_hardware = "virtio-scsi-single"
   tags      = ["security", "attack", "terraform"]
 
   cpu {
     cores   = 6
     sockets = 1
     type    = "host"
+  }
+
+  operating_system {
+    type = "l26"
   }
 
   memory {

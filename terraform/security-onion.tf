@@ -14,12 +14,17 @@ resource "proxmox_virtual_environment_vm" "security_onion" {
   node_name = "lab"
   vm_id     = 107
   on_boot   = false
+  scsi_hardware = "virtio-scsi-single"
   tags      = ["security", "siem", "terraform"]
 
   cpu {
     cores   = 4
     sockets = 1
     type    = "host"
+  }
+
+  operating_system {
+    type = "l26"
   }
 
   memory {

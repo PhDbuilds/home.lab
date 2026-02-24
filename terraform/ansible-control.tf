@@ -17,10 +17,16 @@ resource "proxmox_virtual_environment_vm" "ansible_control" {
   on_boot   = false
   machine   = "q35"
   bios      = "ovmf"
+  scsi_hardware = "virtio-scsi-single"
   tags      = ["ansible", "terraform"]
 
   agent {
     enabled = true
+    type    = "virtio"
+  }
+
+  operating_system {
+    type = "l26"
   }
 
   cpu {

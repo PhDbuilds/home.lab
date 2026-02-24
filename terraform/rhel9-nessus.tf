@@ -19,10 +19,16 @@ resource "proxmox_virtual_environment_vm" "rhel9_nessus" {
   on_boot   = false
   machine   = "q35"
   bios      = "ovmf"
+  scsi_hardware = "virtio-scsi-single"
   tags      = ["security", "scanner", "terraform"]
+
+  operating_system {
+    type = "l26"
+  }
 
   agent {
     enabled = true
+    type    = "virtio"
   }
 
   cpu {

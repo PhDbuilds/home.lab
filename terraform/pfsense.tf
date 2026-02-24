@@ -15,12 +15,17 @@ resource "proxmox_virtual_environment_vm" "pfsense" {
   node_name = "lab"
   vm_id     = 113
   on_boot   = true
+  scsi_hardware = "virtio-scsi-single"
   tags      = ["firewall", "terraform"]
 
   cpu {
     cores   = 2
     sockets = 1
     type    = "host"
+  }
+
+  operating_system {
+    type = "l26"
   }
 
   memory {
