@@ -63,6 +63,8 @@ resource "proxmox_virtual_environment_vm" "pfsense" {
       network_device,
       boot_order,
       cdrom,
+      started,
+      keyboard_layout,
     ]
   }
 }
