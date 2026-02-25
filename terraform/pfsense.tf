@@ -1,17 +1,17 @@
 # -------------------------------------------------------------------
-# pfSense — VM 113
+# polaris — VM 113
 # Firewall/router for the lab
 #
 # Interfaces:
-#   WAN  → vmbr0 (192.168.1.0/24)
-#   LAN  → vmbr3 (192.168.50.0/24)  gateway 192.168.50.1
-#   OPT  → vmbr2 (10.0.0.0/24)      gateway 10.0.0.1
+#   WAN  → vmbr0 → Milky Way  (192.168.1.0/24)
+#   LAN  → vmbr3 → Triangulum (192.168.50.0/24)  gateway 192.168.50.1
+#   OPT  → vmbr2 → Sombrero   (10.0.0.0/24)      gateway 10.0.0.1
 #
 # Import: terraform import proxmox_virtual_environment_vm.pfsense lab/113
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "pfsense" {
-  name      = "pfSense"
+  name      = "polaris"
   node_name = "lab"
   vm_id     = 113
   on_boot   = true

@@ -1,16 +1,16 @@
 # -------------------------------------------------------------------
-# Security Onion — VM 107
+# vela — VM 107
 # SIEM / network security monitoring
 #
 # Interfaces:
-#   net0 → vmbr0 (192.168.1.77 — management)
-#   net1 → vmbr1 (SPAN/mirror port — captures traffic)
+#   net0 → vmbr0 → Milky Way (192.168.1.77 — management)
+#   net1 → vmbr1 → Phantom   (SPAN/mirror port — captures traffic)
 #
 # Import: terraform import proxmox_virtual_environment_vm.security_onion lab/107
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "security_onion" {
-  name      = "SO"
+  name      = "vela"
   node_name = "lab"
   vm_id     = 107
   on_boot   = false

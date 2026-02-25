@@ -2,14 +2,28 @@
 
 Terraform definitions for all VMs in the Proxmox home lab.
 
+## Naming Theme
+
+VMs use a space/astronomy naming scheme. Networks are named after galaxies.
+
+| Star Name        | VM ID | Role                    |
+|------------------|-------|-------------------------|
+| polaris          | 113   | Firewall / router       |
+| sirius           | 103   | Jumphost (Parrot OS)    |
+| corvus           | 116   | Attack box (Kali)       |
+| rigel            | 104   | Vulnerability scanner   |
+| vela             | 107   | SIEM (Security Onion)   |
+| triangulum-alpha | 109   | Ansible control node    |
+| phantom-alpha    | 106   | Vulnerable target       |
+
 ## Network Layout
 
-| Bridge | pfSense Iface | Subnet           | Purpose              |
-|--------|---------------|------------------|----------------------|
-| vmbr0  | WAN           | 192.168.1.0/24   | Prod / management    |
-| vmbr1  | —             | 192.168.255.0/24 | Vulnerable (air-gap) |
-| vmbr2  | OPT           | 10.0.0.0/24      | Dev                  |
-| vmbr3  | LAN           | 192.168.50.0/24  | Test                 |
+| Bridge | Galaxy     | Subnet           | Purpose              |
+|--------|------------|------------------|----------------------|
+| vmbr0  | Milky Way  | 192.168.1.0/24   | Prod / management    |
+| vmbr1  | Phantom    | 192.168.255.0/24 | Vulnerable (air-gap) |
+| vmbr2  | Sombrero   | 10.0.0.0/24      | DMZ                  |
+| vmbr3  | Triangulum | 192.168.50.0/24  | Test                 |
 
 ## Prerequisites
 
@@ -38,11 +52,13 @@ so it knows they exist and can track their state.
 ```bash
 cd terraform/
 terraform init
-terraform import proxmox_virtual_environment_vm.jump lab/qemu/103
-terraform import proxmox_virtual_environment_vm.nessus lab/qemu/104
-terraform import proxmox_virtual_environment_vm.rhel lab/qemu/109
-terraform import proxmox_virtual_environment_vm.pfsense lab/qemu/113
-terraform import proxmox_virtual_environment_vm.kali lab/qemu/116
+terraform import proxmox_virtual_environment_vm.pfsense lab/113
+terraform import proxmox_virtual_environment_vm.parrot lab/103
+terraform import proxmox_virtual_environment_vm.kali lab/116
+terraform import proxmox_virtual_environment_vm.rhel9_nessus lab/104
+terraform import proxmox_virtual_environment_vm.security_onion lab/107
+terraform import proxmox_virtual_environment_vm.ansible_control lab/109
+terraform import proxmox_virtual_environment_vm.metasploitable lab/106
 ```
 
 After importing, run `terraform plan` — the goal is **zero changes**.

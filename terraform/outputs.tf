@@ -1,31 +1,31 @@
 output "lab_vms" {
-  description = "All Terraform-managed VMs"
+  description = "All Terraform-managed VMs (space naming theme)"
   value = {
-    pfsense = {
+    polaris = {
       id   = proxmox_virtual_environment_vm.pfsense.vm_id
       name = proxmox_virtual_environment_vm.pfsense.name
     }
-    kali = {
+    corvus = {
       id   = proxmox_virtual_environment_vm.kali.vm_id
       name = proxmox_virtual_environment_vm.kali.name
     }
-    parrot = {
+    sirius = {
       id   = proxmox_virtual_environment_vm.parrot.vm_id
       name = proxmox_virtual_environment_vm.parrot.name
     }
-    rhel9_nessus = {
+    rigel = {
       id   = proxmox_virtual_environment_vm.rhel9_nessus.vm_id
       name = proxmox_virtual_environment_vm.rhel9_nessus.name
     }
-    metasploitable = {
+    phantom_alpha = {
       id   = proxmox_virtual_environment_vm.metasploitable.vm_id
       name = proxmox_virtual_environment_vm.metasploitable.name
     }
-    security_onion = {
+    vela = {
       id   = proxmox_virtual_environment_vm.security_onion.vm_id
       name = proxmox_virtual_environment_vm.security_onion.name
     }
-    ansible_control = {
+    triangulum_alpha = {
       id   = proxmox_virtual_environment_vm.ansible_control.vm_id
       name = proxmox_virtual_environment_vm.ansible_control.name
     }

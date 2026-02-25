@@ -1,16 +1,16 @@
 # -------------------------------------------------------------------
-# Kali Linux — VM 116
+# corvus — VM 116
 # Primary attack box / purple team
 #
 # Interfaces:
-#   net0 → vmbr0 (192.168.1.20 — prod/management)
-#   net1 → vmbr1 (vulnerable network)
+#   net0 → vmbr0 → Milky Way (192.168.1.20 — prod/management)
+#   net1 → vmbr1 → Phantom   (192.168.255.x — vulnerable network)
 #
 # Import: terraform import proxmox_virtual_environment_vm.kali lab/116
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "kali" {
-  name      = "kal1"
+  name      = "corvus"
   node_name = "lab"
   vm_id     = 116
   on_boot   = false

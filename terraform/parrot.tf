@@ -1,10 +1,10 @@
 # -------------------------------------------------------------------
-# Parrot OS — VM 103
+# sirius — VM 103
 # Jumphost
 #
 # Interfaces:
-#   net0 → vmbr0 (192.168.1.245 — prod/management)
-#   net1 → vmbr3 (192.168.50.101 — test)
+#   net0 → vmbr0 → Milky Way  (192.168.1.245 — prod/management)
+#   net1 → vmbr3 → Triangulum (192.168.50.101 — test)
 #
 # Note: UEFI (OVMF) with q35 machine type
 #
@@ -12,7 +12,7 @@
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "parrot" {
-  name      = "Parrot"
+  name      = "sirius"
   node_name = "lab"
   vm_id     = 103
   on_boot   = false

@@ -14,8 +14,8 @@ terraform {
 }
 
 provider "proxmox" {
-  ssh {
-    agent    = true
-    username = "root"
-  }
+  # endpoint, username, and api_token are read from environment variables:
+  #   PROXMOX_VE_ENDPOINT
+  #   PROXMOX_VE_USERNAME
+  #   PROXMOX_VE_API_TOKEN
 }

@@ -1,9 +1,9 @@
 # -------------------------------------------------------------------
-# Ansible Control Node — VM 109
+# triangulum-alpha — VM 109
 # RHEL9 — Ansible control machine
 #
 # Interfaces:
-#   net0 → vmbr3 (192.168.50.10 — test network)
+#   net0 → vmbr3 → Triangulum (192.168.50.10 — test network)
 #
 # Note: UEFI (OVMF) with q35 machine type, has EFI disk
 #
@@ -11,7 +11,7 @@
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "ansible_control" {
-  name      = "control"
+  name      = "triangulum-alpha"
   node_name = "lab"
   vm_id     = 109
   on_boot   = false

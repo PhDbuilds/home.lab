@@ -1,11 +1,11 @@
 # -------------------------------------------------------------------
-# RHEL9 Nessus — VM 104
+# rigel — VM 104
 # Vulnerability scanner
 #
 # Interfaces:
-#   net0 → vmbr0 (192.168.1.6 — prod)
-#   net1 → vmbr1 (192.168.255.40 — vulnerable)
-#   net2 → vmbr2 (DMZ)
+#   net0 → vmbr0 → Milky Way (192.168.1.6 — prod)
+#   net1 → vmbr1 → Phantom   (192.168.255.40 — vulnerable)
+#   net2 → vmbr2 → Sombrero  (DMZ)
 #
 # Note: UEFI (OVMF) with q35 machine type, has EFI disk
 #
@@ -13,7 +13,7 @@
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "rhel9_nessus" {
-  name      = "RHEL9-Nessus"
+  name      = "rigel"
   node_name = "lab"
   vm_id     = 104
   on_boot   = false

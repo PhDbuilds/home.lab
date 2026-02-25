@@ -1,9 +1,9 @@
 # -------------------------------------------------------------------
-# Metasploitable 2 — VM 106
+# phantom-alpha — VM 106
 # Intentionally vulnerable target
 #
 # Interfaces:
-#   net0 → vmbr1 (192.168.255.10 — vulnerable network only)
+#   net0 → vmbr1 → Phantom (192.168.255.10 — vulnerable network only)
 #
 # Note: Uses IDE disk (not SCSI) — imported VM from OVA
 #
@@ -11,7 +11,7 @@
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "metasploitable" {
-  name      = "Metasploitable2"
+  name      = "phantom-alpha"
   node_name = "lab"
   vm_id     = 106
   on_boot   = false
