@@ -1,18 +1,11 @@
 # -------------------------------------------------------------------
 # Triangulum VMs — vmbr3 (192.168.50.0/24 — test network)
 #
-# All VMs: q35 / OVMF / virtio-scsi-single / 3 vCPU / 2GB RAM / 32GB
-#
-# State migration (run once after applying this change):
-#   terraform state mv 'proxmox_virtual_environment_vm.ansible_control'  'proxmox_virtual_environment_vm.triangulum["triangulum-alpha"]'
-#   terraform state mv 'proxmox_virtual_environment_vm.triangulum_beta'  'proxmox_virtual_environment_vm.triangulum["triangulum-beta"]'
-#   terraform state mv 'proxmox_virtual_environment_vm.triangulum_gamma' 'proxmox_virtual_environment_vm.triangulum["triangulum-gamma"]'
-#   terraform state mv 'proxmox_virtual_environment_vm.triangulum_delta' 'proxmox_virtual_environment_vm.triangulum["triangulum-delta"]'
 # -------------------------------------------------------------------
 
 locals {
   triangulum_vms = {
-    "triangulum-alpha" = { vm_id = 109,  tags = ["ansible", "terraform"] }
+    "triangulum-alpha" = { vm_id = 109, tags = ["ansible", "terraform"] }
     "triangulum-beta"  = { vm_id = 9000, tags = ["k3s", "terraform"] }
     "triangulum-gamma" = { vm_id = 9001, tags = ["k3s", "terraform"] }
     "triangulum-delta" = { vm_id = 9002, tags = ["k3s", "terraform"] }
