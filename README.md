@@ -1,7 +1,5 @@
 # Proxmox Home Lab — Infrastructure as Code
 
-Terraform definitions for all VMs in the Proxmox home lab.
-
 ## Naming Theme
 
 VMs use a space/astronomy naming scheme. Networks are named after galaxies.
@@ -28,21 +26,34 @@ VMs use a space/astronomy naming scheme. Networks are named after galaxies.
 ## Prerequisites
 
 1. Terraform installed on your workstation
-2. Proxmox API token (see below)
-3. SSH key access to Proxmox host
+2. `direnv` installed (`sudo dnf install direnv`)
+3. Proxmox API token for the `terraform@pve` service account
 
 ## Setup
 
-```bash
-# Environment variables (add to ~/.zshrc)
-export PROXMOX_VE_ENDPOINT='https://proxmox:8006'
-export PROXMOX_VE_API_TOKEN='terraform@pve!terraform-token=YOUR_TOKEN'
-export PROXMOX_VE_INSECURE=true
+**1. Hook direnv into zsh** (one-time):
 
-# SSH agent (provider needs this to upload files)
-eval $(ssh-agent)
-ssh-add ~/.ssh/id_ed25519
+```bash
+echo 'eval "$(direnv hook zsh)"' >> ~/.zshrc
+source ~/.zshrc
 ```
+
+**2. Create `.envrc`** in the repo root (already in `.gitignore` — never commit this):
+
+```bash
+export PROXMOX_VE_ENDPOINT='https://proxmox:8006'
+export PROXMOX_VE_USERNAME='terraform@pve'
+export PROXMOX_VE_API_TOKEN='terraform@pve!terraform=YOUR_SECRET_HERE'
+export PROXMOX_VE_INSECURE=true
+```
+
+**3. Allow it:**
+
+```bash
+direnv allow
+```
+
+direnv will automatically load these vars whenever you `cd` into the project and unload them when you leave.
 
 ## Importing Existing VMs
 
