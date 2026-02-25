@@ -1,18 +1,18 @@
 # -------------------------------------------------------------------
-# triangulum-beta — VM 9000
-# Alma — K3s control machine
+# triangulum-gamma — VM 9002
+# Alma — K3s worker machine
 #
 # Interfaces:
-#   net0 → vmbr3 → Triangulum (192.168.50.100 — test network)
+#   net0 → vmbr3 → Triangulum (192.168.50.102 — test network)
 #
 # Note: UEFI (OVMF) with q35 machine type, has EFI disk
 #
 # -------------------------------------------------------------------
 
-resource "proxmox_virtual_environment_vm" "triangulum_beta" {
-  name          = "triangulum-beta"
+resource "proxmox_virtual_environment_vm" "triangulum_delta" {
+  name          = "triangulum-delta"
   node_name     = "lab"
-  vm_id         = 9000
+  vm_id         = 9002
   on_boot       = false
   machine       = "q35"
   bios          = "ovmf"
