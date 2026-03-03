@@ -1,25 +1,19 @@
 # -------------------------------------------------------------------
-# sirius — VM 103
+# sirius — VM 102
 # Jumphost
 #
-# Interfaces:
-#   net0 → vmbr0 → Milky Way  (192.168.1.245 — prod/management)
-#   net1 → vmbr3 → Triangulum (192.168.50.101 — test)
-#
 # Note: UEFI (OVMF) with q35 machine type
-#
-# Import: terraform import proxmox_virtual_environment_vm.parrot lab/103
 # -------------------------------------------------------------------
 
-resource "proxmox_virtual_environment_vm" "parrot" {
-  name      = "sirius"
-  node_name = "lab"
-  vm_id     = 103
-  on_boot   = false
-  machine   = "q35"
-  bios      = "ovmf"
+resource "proxmox_virtual_environment_vm" "sirius" {
+  name          = "sirius"
+  node_name     = "lab"
+  vm_id         = 102
+  on_boot       = false
+  machine       = "q35"
+  bios          = "ovmf"
   scsi_hardware = "virtio-scsi-single"
-  tags      = ["security", "jumphost", "terraform"]
+  tags          = ["security", "jumphost", "terraform"]
 
   agent {
     enabled = true
@@ -30,14 +24,24 @@ resource "proxmox_virtual_environment_vm" "parrot" {
     type = "l26"
   }
 
+  cdrom {
+    #file_id = "local:iso/AlmaLinux-10.1-x86_64-dvd.iso"
+    file_id = "none"
+  }
+
   cpu {
-    cores   = 4
+    cores   = 2
     sockets = 1
     type    = "host"
   }
 
   memory {
-    dedicated = 8000
+    dedicated = 4096
+  }
+
+  efi_disk {
+    datastore_id = "local-lvm"
+    type         = "4m"
   }
 
   disk {
@@ -47,16 +51,9 @@ resource "proxmox_virtual_environment_vm" "parrot" {
     iothread     = true
   }
 
-  # net0 — vmbr0 (prod/management)
+  # Management only — reaches other networks through OPNsense
   network_device {
-    bridge   = "vmbr0"
-    model    = "virtio"
-    firewall = true
-  }
-
-  # net1 — vmbr3 (test)
-  network_device {
-    bridge = "vmbr3"
+    bridge = "vmbr1"
     model  = "virtio"
   }
 
@@ -65,7 +62,6 @@ resource "proxmox_virtual_environment_vm" "parrot" {
       disk,
       network_device,
       boot_order,
-      cdrom,
       started,
       keyboard_layout,
     ]
