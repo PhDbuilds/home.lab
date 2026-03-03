@@ -2,26 +2,24 @@
 
 ## Naming Theme
 
-VMs use a space/astronomy naming scheme. Networks are named after galaxies.
+VMs use a space-themed naming scheme.
 
-| Star Name        | VM ID | Role                    |
-|------------------|-------|-------------------------|
-| polaris          | 113   | Firewall / router       |
-| sirius           | 103   | Jumphost (Parrot OS)    |
-| corvus           | 116   | Attack box (Kali)       |
-| rigel            | 104   | Vulnerability scanner   |
-| vela             | 107   | SIEM (Security Onion)   |
-| triangulum-alpha | 109   | Ansible control node    |
-| phantom-alpha    | 106   | Vulnerable target       |
+| Host Name | VM ID | Role | Network |
+|-----------|-------|------|---------|
+| polaris | 100 | Firewall / router (OPNsense) | All bridges |
+| sirius | 102 | Jumphost (AlmaLinux) | Management |
 
 ## Network Layout
 
-| Bridge | Galaxy     | Subnet           | Purpose              |
-|--------|------------|------------------|----------------------|
-| vmbr0  | Milky Way  | 192.168.1.0/24   | Prod / management    |
-| vmbr1  | Phantom    | 192.168.255.0/24 | Vulnerable (air-gap) |
-| vmbr2  | Sombrero   | 10.0.0.0/24      | DMZ                  |
-| vmbr3  | Triangulum | 192.168.50.0/24  | Test                 |
+All networking is virtual inside Proxmox using Open vSwitch bridges. OPNsense (polaris) acts as the sole router and firewall between all segments.
+
+| Bridge | Network | Subnet | OPNsense Gateway | Policy |
+|--------|---------|--------|-------------------|--------|
+| vmbr0 | LAN | 192.168.1.0/24 | 192.168.1.2 (WAN) | Uplink to home router |
+| vmbr1 | Management | 10.0.0.0/24 | 10.0.0.1 | Full access everywhere |
+| vmbr2 | Prod | 10.10.0.0/24 | 10.10.0.1 | Internet only, no cross-network |
+| vmbr3 | Security Lab | 10.20.0.0/24 | 10.20.0.1 | Fully isolated, intra-segment only |
+
 
 ## Prerequisites
 
@@ -54,27 +52,6 @@ direnv allow
 ```
 
 direnv will automatically load these vars whenever you `cd` into the project and unload them when you leave.
-
-## Importing Existing VMs
-
-These VMs already exist in Proxmox. Terraform needs to "import" them
-so it knows they exist and can track their state.
-
-```bash
-cd terraform/
-terraform init
-terraform import proxmox_virtual_environment_vm.pfsense lab/113
-terraform import proxmox_virtual_environment_vm.parrot lab/103
-terraform import proxmox_virtual_environment_vm.kali lab/116
-terraform import proxmox_virtual_environment_vm.rhel9_nessus lab/104
-terraform import proxmox_virtual_environment_vm.security_onion lab/107
-terraform import proxmox_virtual_environment_vm.ansible_control lab/109
-terraform import proxmox_virtual_environment_vm.metasploitable lab/106
-```
-
-After importing, run `terraform plan` — the goal is **zero changes**.
-If Terraform wants to change something, adjust the `.tf` file to match
-what actually exists, then plan again until it's clean.
 
 ## Day-to-Day Usage
 
