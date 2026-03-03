@@ -25,7 +25,6 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
   }
 
   cdrom {
-    enabled = true
     file_id = "local:iso/OPNsense-26.1.2-dvd-amd64.iso"
   }
 
