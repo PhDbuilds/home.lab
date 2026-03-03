@@ -11,7 +11,7 @@
 # -------------------------------------------------------------------
 
 resource "proxmox_virtual_environment_vm" "opnsense" {
-  name          = "polaris (opnsense)"
+  name          = "polaris"
   node_name     = "lab"
   vm_id         = 100
   on_boot       = true
