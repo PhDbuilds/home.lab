@@ -1,0 +1,167 @@
+# -------------------------------------------------------------------
+# AlmaLinux 9 Golden Image
+# Builds a hardened base template on Proxmox via kickstart
+#
+# Usage:
+#   packer init .
+#   packer validate .
+#   packer build .
+#
+# Prerequisites:
+#   - AlmaLinux 9 minimal ISO uploaded to Proxmox storage
+#   - API token set via direnv (PKR_VAR_proxmox_url, _username, _token)
+#
+# Docs:
+#   Plugin:    https://developer.hashicorp.com/packer/integrations/hashicorp/proxmox/latest/components/builder/iso
+#   Kickstart: https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/automatically_installing_rhel/kickstart-commands-and-options-reference_rhel-installer
+# -------------------------------------------------------------------
+
+packer {
+  required_plugins {
+    proxmox = {
+      version = ">= 1.2.2"
+      source  = "github.com/hashicorp/proxmox"
+    }
+  }
+}
+
+# ─── Variables ────────────────────────────────────────────────
+
+# Sensitive — set via direnv (PKR_VAR_proxmox_url, etc.)
+variable "proxmox_url" {
+  type        = string
+  description = "Proxmox API URL (e.g., https://192.168.1.180:8006/api2/json)"
+}
+
+variable "proxmox_username" {
+  type        = string
+  description = "Proxmox API token user (e.g., terraform@pve!packer-token)"
+}
+
+variable "proxmox_token" {
+  type        = string
+  sensitive   = true
+  description = "Proxmox API token secret"
+}
+
+# Non-sensitive — defaults are fine, override with -var if needed
+variable "proxmox_node" {
+  type    = string
+  default = "lab"
+}
+
+variable "iso_file" {
+  type        = string
+  default     = "local:iso/AlmaLinux-9-latest-x86_64-minimal.iso"
+  description = "Path to the AlmaLinux 9 (minimal) ISO in Proxmox storage"
+}
+
+variable "vm_id" {
+  type    = number
+  default = 9000
+}
+
+variable "ssh_public_key_path" {
+  type        = string
+  description = "Path to SSH public key for the ansible user"
+}
+
+variable "storage_pool" {
+  type    = string
+  default = "local-lvm"
+}
+
+# ─── Source ───────────────────────────────────────────────────
+
+source "proxmox-iso" "almalinux-golden" {
+  # Proxmox connection
+  proxmox_url              = var.proxmox_url
+  username                 = var.proxmox_username
+  token                    = var.proxmox_token
+  insecure_skip_tls_verify = true
+  node                     = var.proxmox_node
+
+  # VM settings
+  vm_id                = var.vm_id
+  vm_name              = "almalinux9-golden"
+  machine              = "q35"
+  bios = "ovmf"
+  efi_config {
+    efi_storage_pool  = var.storage_pool
+    pre_enrolled_keys = false
+  }
+  template_name        = "almalinux9-golden"
+  template_description = "AlmaLinux 9 Golden Image — built with Packer on ${timestamp()}"
+  os                   = "l26"
+  qemu_agent           = true
+
+  # Hardware
+  cores  = 2
+  memory = 4096
+  cpu_type = "host"
+
+  scsi_controller = "virtio-scsi-single"
+
+  disks {
+    type         = "scsi"
+    disk_size    = "20G"
+    storage_pool = var.storage_pool
+    io_thread     = true
+  }
+
+  # Build on vmbr0 so the VM has internet for package installs
+  network_adapters {
+    model    = "virtio"
+    bridge   = "vmbr0"
+    firewall = false
+  }
+
+  # ISO — boot_iso block replaces the deprecated top-level iso_file param
+  # Ref: https://developer.hashicorp.com/packer/integrations/hashicorp/proxmox/latest/components/builder/iso
+  boot_iso {
+    iso_file     = var.iso_file
+    unmount      = true
+    iso_checksum = "none"
+  }
+
+  # UEFI/OVMF GRUB: press 'e' to edit the selected entry, navigate to end of
+  # the linuxefi line, append the kickstart URL, then Ctrl+X to boot.
+  boot_command = [
+    "<wait><up><wait3>",
+    "e<wait2>",
+    "<down><down><end><wait>",
+    " inst.ks=http://{{ .HTTPIP }}:{{ .HTTPPort }}/ks.cfg",
+    "<leftCtrlOn>x<leftCtrlOff>"
+  ]
+  boot_wait = "20s"
+
+  # Packer serves the kickstart file from this directory
+  http_directory = "http"
+
+  # SSH — packer connects with these creds after kickstart completes
+  ssh_username = "root"
+  ssh_password = "packer"
+  ssh_timeout  = "20m"
+
+  # Cloud-init drive for cloned VMs
+  cloud_init              = true
+  cloud_init_storage_pool = var.storage_pool
+}
+
+# ─── Build ────────────────────────────────────────────────────
+
+build {
+  sources = ["source.proxmox-iso.almalinux-golden"]
+
+  # Copy your SSH public key for the ansible user
+  provisioner "file" {
+    source      = var.ssh_public_key_path
+    destination = "/tmp/ansible_authorized_key.pub"
+  }
+
+  # Run the provisioning script
+  provisioner "shell" {
+    script          = "scripts/provision.sh"
+    execute_command = "chmod +x {{ .Path }}; {{ .Vars }} bash {{ .Path }}"
+  }
+}
