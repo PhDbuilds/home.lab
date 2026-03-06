@@ -1,0 +1,89 @@
+---
+# ─── Firewalld ────────────────────────────────────────────────
+- name: Ensure firewalld is installed
+  ansible.builtin.dnf:
+    name: firewalld
+    state: present
+
+- name: Ensure firewalld is running and enabled
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Set allowed firewall services
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  loop: "{{ firewalld_allowed_services }}"
+
+# ─── Automatic Security Updates ──────────────────────────────
+- name: Install dnf-automatic
+  ansible.builtin.dnf:
+    name: dnf-automatic
+    state: present
+  when: enable_auto_updates
+
+- name: Configure dnf-automatic update type
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: '^upgrade_type'
+    line: "upgrade_type = {{ auto_update_type }}"
+  when: enable_auto_updates
+  notify: Restart dnf-automatic timer
+
+- name: Enable apply_updates in dnf-automatic
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: '^apply_updates'
+    line: "apply_updates = yes"
+  when: enable_auto_updates
+  notify: Restart dnf-automatic timer
+
+- name: Enable dnf-automatic timer
+  ansible.builtin.systemd:
+    name: dnf-automatic.timer
+    state: started
+    enabled: true
+  when: enable_auto_updates
+
+# ─── OpenSCAP ─────────────────────────────────────────────────
+- name: Install OpenSCAP packages
+  ansible.builtin.dnf:
+    name:
+      - openscap-scanner
+      - scap-security-guide
+    state: present
+  when: install_openscap
+
+- name: Create OpenSCAP report directory
+  ansible.builtin.file:
+    path: /var/log/openscap
+    state: directory
+    owner: root
+    group: root
+    mode: "0750"
+  when: install_openscap
+
+- name: Run OpenSCAP CIS scan
+  ansible.builtin.command:
+    cmd: >
+      oscap xccdf eval
+      --profile xccdf_org.ssgproject.content_profile_{{ oscap_profile }}
+      --results /var/log/openscap/results.xml
+      --report /var/log/openscap/report.html
+      /usr/share/xml/scap/ssg/content/ssg-almalinux9-ds.xml
+  register: oscap_result
+  failed_when: oscap_result.rc not in [0, 2]
+  changed_when: false
+  when: install_openscap
+  # rc 0 = all pass, rc 2 = some rules failed (expected before full remediation)
+
+- name: Display OpenSCAP scan summary
+  ansible.builtin.debug:
+    msg: >
+      OpenSCAP scan complete. Report at /var/log/openscap/report.html
+      (rc={{ oscap_result.rc }}{% if oscap_result.rc == 2 %}, some rules failed — review report{% endif %})
+  when: install_openscap
