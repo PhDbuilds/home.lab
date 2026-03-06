@@ -1,0 +1,55 @@
+---
+# ─── devsec.hardening.os_hardening overrides ─────────────────
+# Ref: https://github.com/dev-sec/ansible-collection-hardening/tree/master/roles/os_hardening
+
+# SELinux
+os_selinux_state: enforcing
+os_selinux_policy: targeted
+
+# Filesystem hardening
+os_security_kernel_enable_module_loading: true
+
+# Allow ansible user to use su (needed for our workflow)
+os_auth_pam_passwdqc_enable: false
+os_security_users_allow: ['ansible']
+
+# Sysctl overrides — if you need IP forwarding for k8s nodes later:
+# sysctl_overwrite:
+#   net.ipv4.ip_forward: 1
+
+# ─── devsec.hardening.ssh_hardening overrides ────────────────
+# Ref: https://github.com/dev-sec/ansible-collection-hardening/tree/master/roles/ssh_hardening
+
+# Allow the ansible user to SSH in
+ssh_allow_users: 'ansible'
+
+# Disable root login
+ssh_permit_root_login: 'no'
+
+# Key-only auth
+ssh_client_password_login: false
+ssh_server_password_login: false
+
+# Disable X11 and agent forwarding
+ssh_allow_agent_forwarding: false
+ssh_x11_forwarding: false
+
+# Max auth attempts
+ssh_max_auth_retries: 3
+
+# SFTP — needed for Ansible file transfers if scp is not available
+sftp_enabled: true
+
+# ─── basehardening role variables ─────────────────────────────
+
+# Firewalld
+firewalld_allowed_services:
+  - ssh
+
+# Automatic security updates
+enable_auto_updates: true
+auto_update_type: security
+
+# OpenSCAP scanning
+install_openscap: true
+oscap_profile: cis_server_l1
