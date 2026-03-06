@@ -78,7 +78,7 @@
       --profile xccdf_org.ssgproject.content_profile_{{ oscap_profile }}
       --results /var/log/openscap/results.xml
       --report /var/log/openscap/report.html
-      /usr/share/xml/scap/ssg/content/ssg-almalinux9-ds.xml
+      /usr/share/xml/scap/ssg/content/ssg-almalinux10-ds.xml
   register: oscap_result
   failed_when: oscap_result.rc not in [0, 2]
   changed_when: false
