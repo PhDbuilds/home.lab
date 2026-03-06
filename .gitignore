@@ -1,9 +1,20 @@
-.terraform/
+# Terraform
 *.tfstate
 *.tfstate.backup
-*.tfstate.lock.info
-crash.log
-*.pem
-*.key
-.env
+.terraform/
+
+# Packer
+packer_cache/
+*.auto.pkrvars.hcl
+*.box
+.packer.d/
+
+# Ansible
+*.retry
+
+# Secrets
 .envrc
+
+# OS junk
+.DS_Store
+Thumbs.db
