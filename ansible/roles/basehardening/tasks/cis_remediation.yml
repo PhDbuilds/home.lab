@@ -1,0 +1,7 @@
+---
+# CIS fixes not covered by devsec.hardening
+# Source: OpenSCAP CIS Level 1 Server scan report
+- name: Ensure aide is installed
+  ansible.builtin.package:
+    name: aide
+    state: present

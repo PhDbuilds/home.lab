@@ -49,6 +49,10 @@
     enabled: true
   when: enable_auto_updates
 
+# ─── CIS Remediation ─────────────────────────────────────────
+- name: Include CIS remediation tasks
+  ansible.builtin.include_tasks: cis_remediation.yml
+
 # ─── OpenSCAP ─────────────────────────────────────────────────
 - name: Install OpenSCAP packages
   ansible.builtin.dnf:
