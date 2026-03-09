@@ -72,6 +72,9 @@ resource "proxmox_virtual_environment_vm" "ansible_test" {
   }
 
   initialization {
+    dns {
+      servers = [each.value.gateway]
+    }
     ip_config {
       ipv4 {
         address = each.value.ip
