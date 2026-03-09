@@ -33,6 +33,14 @@ resource "proxmox_virtual_environment_vm" "opnsense" {
     type = "other"
   }
 
+
+  agent {
+    enabled = true
+    timeout = "15m"
+    trim    = false
+    type    = "virtio"
+  }
+
   memory {
     dedicated = 2048
   }
