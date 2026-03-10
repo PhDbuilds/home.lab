@@ -5,6 +5,8 @@
 # triangulum-alpha2  — server (control plane) — 10.10.0.101
 # triangulum-beta1   — agent (worker)         — 10.10.0.102
 # triangulum-beta2   — agent (worker)         — 10.10.0.103
+# triangulum-beta3   — agent (worker)         — 10.10.0.104
+# triangulum-beta4   — agent (worker)         — 10.10.0.105
 #
 # Cloned from AlmaLinux 9 golden image (VM 9000)
 # -------------------------------------------------------------------
@@ -35,6 +37,20 @@ locals {
     "triangulum-beta2" = {
       vm_id  = 303
       ip     = "10.10.0.103/24"
+      role   = "agent"
+      cores  = 2
+      memory = 4096
+    }
+    "triangulum-beta3" = {
+      vm_id  = 304
+      ip     = "10.10.0.104/24"
+      role   = "agent"
+      cores  = 2
+      memory = 4096
+    }
+    "triangulum-beta4" = {
+      vm_id  = 305
+      ip     = "10.10.0.105/24"
       role   = "agent"
       cores  = 2
       memory = 4096
