@@ -28,6 +28,21 @@
       ansible.builtin.command: postgresql-setup --initdb
       when: not pg_init.stat.exists
 
+
+    - name: Set password encryption to scram-sha-256
+    ansible.builtin.lineinfile:
+      path: /var/lib/pgsql/data/postgresql.conf
+      regexp: "^#?password_encryption"
+      line: "password_encryption = scram-sha-256"
+    register: pg_enc
+
+    - name: Allow localhost password auth
+      ansible.builtin.lineinfile:
+        path: /var/lib/pgsql/data/pg_hba.conf
+        regexp: "^host    all             all             127.0.0.1/32"
+        line: "host    all             all             127.0.0.1/32            scram-sha-256"
+      register: pg_hba_local
+
     - name: Start and enable PostgreSQL
       ansible.builtin.systemd:
         name: postgresql
@@ -83,3 +98,10 @@
         state: enabled
         permanent: true
         immediate: true
+
+
+    - name: Restart PostgreSQL if config changed
+    ansible.builtin.systemd:
+      name: postgresql
+      state: restarted
+    when: pg_conf.changed or pg_hba.changed or pg_enc.changed or pg_hba_local.changed
