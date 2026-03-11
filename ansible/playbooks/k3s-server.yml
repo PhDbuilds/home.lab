@@ -1,0 +1,31 @@
+---
+- name: Configure K3s Servers (HA with Postgres)
+  hosts: k3s_server
+  become: true
+  vars:
+    load_balancer_ip: "10.10.0.107"
+
+  tasks:
+    - name: SELinux - Allow NGINX/K3s network access
+      seboolean:
+        name: httpd_can_network_connect
+        state: true
+        persistent: true
+
+    - name: SELinux - Label port 6443
+      seport:
+        ports: 6443
+        proto: tcp
+        setype: http_port_t
+        state: present
+
+    - name: Install K3s Server
+      shell: |
+        curl -sfL https://get.k3s.io | sh -s - server \
+        --node-taint CriticalAddonsOnly=true:NoExecute \
+        --tls-san {{ load_balancer_ip }}
+      args:
+        creates: /usr/local/bin/k3s
+      environment:
+        K3S_DATASTORE_ENDPOINT: "{{ lookup('ansible.builtin.env', 'K3S_DATASTORE_ENDPOINT') }}"
+
