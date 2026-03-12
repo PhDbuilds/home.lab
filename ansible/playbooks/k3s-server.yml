@@ -4,20 +4,13 @@
   become: true
   vars:
     load_balancer_ip: "10.10.0.107"
-
   tasks:
-    - name: SELinux - Allow NGINX/K3s network access
-      seboolean:
-        name: httpd_can_network_connect
-        state: true
-        persistent: true
-
-    - name: SELinux - Label port 6443
-      seport:
-        ports: 6443
-        proto: tcp
-        setype: http_port_t
-        state: present
+    - name: Open k3s API port
+      ansible.posix.firewalld:
+        port: 6443/tcp
+        state: enabled
+        permanent: true
+        immediate: true
 
     - name: Install K3s Server
       shell: |

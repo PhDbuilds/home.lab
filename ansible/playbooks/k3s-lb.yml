@@ -3,11 +3,25 @@
   hosts: k3s_lb
   become: true
   tasks:
-    - name: Install Nginx
+    - name: Install Nginx and dependencies
       ansible.builtin.dnf:
-        name: 
+        name:
           - nginx
           - nginx-mod-stream
+          - policycoreutils-python-utils
+        state: present
+
+    - name: Allow Nginx to proxy network connections
+      ansible.posix.seboolean:
+        name: httpd_can_network_connect
+        state: true
+        persistent: true
+
+    - name: Allow Nginx to bind to port 6443
+      community.general.seport:
+        ports: 6443
+        proto: tcp
+        setype: http_port_t
         state: present
 
     - name: Configure Nginx as k3s load balancer
