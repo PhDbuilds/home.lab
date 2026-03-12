@@ -12,6 +12,20 @@
         permanent: true
         immediate: true
 
+    - name: Open k3s metrics port
+      ansible.posix.firewalld:
+        port: 10250/tcp
+        state: enabled
+        permanent: true
+        immediate: true
+
+    - name: Open flannel VXLAN port
+      ansible.posix.firewalld:
+        port: 8472/udp
+        state: enabled
+        permanent: true
+        immediate: true
+
     - name: Install K3s Server
       shell: |
         curl -sfL https://get.k3s.io | sh -s - server \
