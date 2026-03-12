@@ -28,4 +28,4 @@
         creates: /usr/local/bin/k3s
       environment:
         K3S_DATASTORE_ENDPOINT: "{{ lookup('ansible.builtin.env', 'K3S_DATASTORE_ENDPOINT') }}"
-
+        K3S_TOKEN: "{{ lookup('ansible.builtin.env', 'K3S_TOKEN') }}"
