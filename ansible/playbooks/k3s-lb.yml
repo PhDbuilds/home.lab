@@ -1,0 +1,66 @@
+---
+- name: Deploy Nginx load balancer for k3s
+  hosts: k3s_lb
+  become: true
+  tasks:
+    - name: Install Nginx and dependencies
+      ansible.builtin.dnf:
+        name:
+          - nginx
+          - nginx-mod-stream
+          - policycoreutils-python-utils
+        state: present
+
+    - name: Allow Nginx to proxy network connections
+      ansible.posix.seboolean:
+        name: httpd_can_network_connect
+        state: true
+        persistent: true
+
+    - name: Allow Nginx to bind to port 6443
+      community.general.seport:
+        ports: 6443
+        proto: tcp
+        setype: http_port_t
+        state: present
+
+    - name: Configure Nginx as k3s load balancer
+      ansible.builtin.copy:
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          load_module /usr/lib64/nginx/modules/ngx_stream_module.so;
+          events {}
+          stream {
+              upstream k3s_servers {
+                  server 10.10.0.100:6443;
+                  server 10.10.0.101:6443;
+              }
+              server {
+                  listen 6443;
+                  proxy_pass k3s_servers;
+              }
+          }
+        validate: nginx -t -c %s
+      notify: Restart Nginx
+
+    - name: Start and enable Nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: started
+        enabled: true
+
+    - name: Open k3s API port
+      ansible.posix.firewalld:
+        port: 6443/tcp
+        state: enabled
+        permanent: true
+        immediate: true
+
+  handlers:
+    - name: Restart Nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: restarted
