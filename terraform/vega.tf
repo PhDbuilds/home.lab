@@ -1,32 +1,28 @@
 # -------------------------------------------------------------------
-# Triangulum LB — Nginx load balancer for k3s API server
-# Prod network (vmbr2, 10.10.0.0/24)
+# vega — VM 101
+# Hashicorp Vault
 #
-# Balances traffic across k3s server nodes:
-#   triangulum-alpha1 (10.10.0.100)
-#   triangulum-alpha2 (10.10.0.101)
-#
-# Cloned from AlmaLinux 9 golden image (VM 9000)
+# Note: UEFI (OVMF) with q35 machine type
 # -------------------------------------------------------------------
 
-resource "proxmox_virtual_environment_vm" "k3s_lb" {
-  name          = "triangulum-lb"
+resource "proxmox_virtual_environment_vm" "vega" {
+  name          = "vega"
   node_name     = "lab"
-  vm_id         = 307
-  on_boot       = true
+  vm_id         = 101
+  on_boot       = false
   machine       = "q35"
   bios          = "ovmf"
   scsi_hardware = "virtio-scsi-single"
-  tags          = ["k3s", "loadbalancer", "terraform", "triangulum"]
-
-  clone {
-    vm_id = 9000
-    full  = true
-  }
+  tags          = ["security", "vault", "terraform"]
 
   agent {
     enabled = true
     type    = "virtio"
+  }
+
+  clone {
+    vm_id = 9000
+    full  = true
   }
 
   operating_system {
@@ -34,28 +30,41 @@ resource "proxmox_virtual_environment_vm" "k3s_lb" {
   }
 
   cpu {
-    cores   = 1
+    cores   = 2
     sockets = 1
     type    = "host"
   }
 
   memory {
-    dedicated = 1024
+    dedicated = 4096
   }
 
+  efi_disk {
+    datastore_id = "local-lvm"
+    type         = "4m"
+  }
+
+  disk {
+    datastore_id = "local-lvm"
+    size         = 50
+    interface    = "scsi0"
+    iothread     = true
+  }
+
+  # Management only — reaches other networks through OPNsense
   network_device {
-    bridge = "vmbr2"
+    bridge = "vmbr1"
     model  = "virtio"
   }
 
   initialization {
     dns {
-      servers = ["10.10.0.1"]
+      servers = ["10.0.0.1"]
     }
     ip_config {
       ipv4 {
-        address = "10.10.0.107/24"
-        gateway = "10.10.0.1"
+        address = "10.0.0.101/24"
+        gateway = "10.0.0.1"
       }
     }
     user_account {
@@ -65,7 +74,6 @@ resource "proxmox_virtual_environment_vm" "k3s_lb" {
       ]
     }
   }
-
   lifecycle {
     ignore_changes = [
       disk,
@@ -77,10 +85,10 @@ resource "proxmox_virtual_environment_vm" "k3s_lb" {
   }
 }
 
-output "k3s_lb" {
-  description = "k3s load balancer"
+output "vega" {
+  description = "Hashicorp Vault"
   value = {
-    vm_id = proxmox_virtual_environment_vm.k3s_lb.vm_id
-    ip    = "10.10.0.107"
+    vm_id = proxmox_virtual_environment_vm.vega.vm_id
+    ip    = "10.0.0.101"
   }
 }
