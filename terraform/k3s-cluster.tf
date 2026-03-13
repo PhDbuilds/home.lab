@@ -112,8 +112,7 @@ resource "proxmox_virtual_environment_vm" "k3s" {
     user_account {
       username = "ansible"
       keys = [
-        file("~/.ssh/id_ed25519.pub"),
-        file("~/.ssh/sirius_ansible.pub"),
+        trimspace(file("~/.ssh/sirius_ansible.pub")),
       ]
     }
   }
