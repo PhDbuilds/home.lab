@@ -4,6 +4,7 @@
   become: true
   vars:
     load_balancer_ip: "10.10.0.107"
+    vault_k3s: "{{ lookup('community.hashi_vault.vault_kv2_get', 'k3s', mount_point='secret') }}"
   tasks:
     - name: Open flannel VXLAN port
       ansible.posix.firewalld:
@@ -26,4 +27,4 @@
       args:
         creates: /usr/local/bin/k3s
       environment:
-        K3S_TOKEN: "{{ lookup('ansible.builtin.env', 'K3S_TOKEN') }}"
+        K3S_TOKEN: "{{ vault_k3s.secret.k3s_token }}"
