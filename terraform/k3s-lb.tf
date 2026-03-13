@@ -50,7 +50,8 @@ resource "proxmox_virtual_environment_vm" "k3s_lb" {
 
   initialization {
     dns {
-      servers = ["10.10.0.1"]
+      servers = [each.value.gateway]
+      domain  = "home.lab"
     }
     ip_config {
       ipv4 {
