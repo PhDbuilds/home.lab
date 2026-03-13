@@ -9,7 +9,7 @@
 #
 # Prerequisites:
 #   - AlmaLinux 9 minimal ISO uploaded to Proxmox storage
-#   - API token set via direnv (PKR_VAR_proxmox_url, _username, _token)
+#   - VAULT_ADDR set and authenticated (vault login)
 #
 # Docs:
 #   Plugin:    https://developer.hashicorp.com/packer/integrations/hashicorp/proxmox/latest/components/builder/iso
@@ -25,26 +25,17 @@ packer {
   }
 }
 
+# ─── Secrets from Vault ───────────────────────────────────────
+
+locals {
+  proxmox_url         = vault("secret/data/packer", "pkr_var_proxmox_url")
+  proxmox_username    = vault("secret/data/packer", "pkr_var_proxmox_username")
+  proxmox_token       = vault("secret/data/packer", "pkr_var_proxmox_token")
+  ssh_public_key_path = vault("secret/data/packer", "pkr_var_ssh_public_key_path")
+}
+
 # ─── Variables ────────────────────────────────────────────────
 
-# Sensitive — set via direnv (PKR_VAR_proxmox_url, etc.)
-variable "proxmox_url" {
-  type        = string
-  description = "Proxmox API URL (e.g., https://192.168.1.180:8006/api2/json)"
-}
-
-variable "proxmox_username" {
-  type        = string
-  description = "Proxmox API token user (e.g., terraform@pve!packer-token)"
-}
-
-variable "proxmox_token" {
-  type        = string
-  sensitive   = true
-  description = "Proxmox API token secret"
-}
-
-# Non-sensitive — defaults are fine, override with -var if needed
 variable "proxmox_node" {
   type    = string
   default = "lab"
@@ -61,11 +52,6 @@ variable "vm_id" {
   default = 9000
 }
 
-variable "ssh_public_key_path" {
-  type        = string
-  description = "Path to SSH public key for the ansible user"
-}
-
 variable "storage_pool" {
   type    = string
   default = "local-lvm"
@@ -75,9 +61,9 @@ variable "storage_pool" {
 
 source "proxmox-iso" "almalinux-golden" {
   # Proxmox connection
-  proxmox_url              = var.proxmox_url
-  username                 = var.proxmox_username
-  token                    = var.proxmox_token
+  proxmox_url              = local.proxmox_url
+  username                 = local.proxmox_username
+  token                    = local.proxmox_token
   insecure_skip_tls_verify = true
   node                     = var.proxmox_node
 
@@ -155,7 +141,7 @@ build {
 
   # Copy your SSH public key for the ansible user
   provisioner "file" {
-    source      = var.ssh_public_key_path
+    source      = local.ssh_public_key_path
     destination = "/tmp/ansible_authorized_key.pub"
   }
 
