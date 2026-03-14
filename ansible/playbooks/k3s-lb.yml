@@ -38,9 +38,29 @@
                   server 10.10.0.100:6443;
                   server 10.10.0.101:6443;
               }
+              upstream k3s_http {
+                  server 10.10.0.102:80;
+                  server 10.10.0.103:80;
+                  server 10.10.0.104:80;
+                  server 10.10.0.105:80;
+              }
+              upstream k3s_https {
+                  server 10.10.0.102:443;
+                  server 10.10.0.103:443;
+                  server 10.10.0.104:443;
+                  server 10.10.0.105:443;
+              }
               server {
                   listen 6443;
                   proxy_pass k3s_servers;
+              }
+              server {
+                  listen 80;
+                  proxy_pass k3s_http;
+              }
+              server {
+                  listen 443;
+                  proxy_pass k3s_https;
               }
           }
         validate: nginx -t -c %s
