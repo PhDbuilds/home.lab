@@ -1,0 +1,70 @@
+# Reference
+# https://fabianlee.org/2022/07/02/prometheus-installing-kube-prometheus-stack-on-k3s-cluster/
+---
+- name: Expose k3s control plane metrics for Prometheus
+  hosts: k3s_server
+  become: true
+  tasks:
+    - name: Create k3s config directory
+      ansible.builtin.file:
+        path: /etc/rancher/k3s
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Configure k3s to expose control plane metrics
+      ansible.builtin.copy:
+        dest: /etc/rancher/k3s/config.yaml
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          kube-controller-manager-arg:
+            - "bind-address=0.0.0.0"
+          kube-proxy-arg:
+            - "metrics-bind-address=0.0.0.0"
+          kube-scheduler-arg:
+            - "bind-address=0.0.0.0"
+          etcd-expose-metrics: true
+      register: k3s_config
+
+    - name: Restart k3s to apply config
+      ansible.builtin.systemd:
+        name: k3s
+        state: restarted
+      when: k3s_config.changed
+
+    - name: Wait for k3s to be ready
+      ansible.builtin.command: k3s kubectl get nodes
+      register: k3s_ready
+      retries: 30
+      delay: 5
+      until: k3s_ready.rc == 0
+      changed_when: false
+
+    - name: Open metrics ports in firewall
+      ansible.posix.firewalld:
+        port: "{{ item }}"
+        state: enabled
+        permanent: true
+        immediate: true
+      loop:
+        - 10249/tcp   # kube-proxy
+        - 10251/tcp   # kube-scheduler
+        - 10257/tcp   # kube-controller-manager
+
+    - name: Verify metrics endpoints are reachable
+      ansible.builtin.uri:
+        url: "http://127.0.0.1:{{ item }}/metrics"
+        return_content: false
+        status_code: [200, 401, 403]
+      loop:
+        - 10249
+        - 10251
+      register: metrics_check
+
+    - name: Display metrics endpoint status
+      ansible.builtin.debug:
+        msg: "Metrics endpoints are exposed and reachable"
+      when: metrics_check is succeeded
