@@ -44,6 +44,21 @@ chmod 600 /home/ansible/.ssh/authorized_keys
 chown -R ansible:ansible /home/ansible/.ssh
 rm -f /tmp/ansible_authorized_key.pub
 
+echo "=== [3b/7] Creating astronuat user ==="
+useradd -m -s /bin/bash astronuat
+cat > /etc/sudoers.d/astronuat << 'SUDOERS'
+Defaults:astronuat timestamp_type=global,timestamp_timeout=240
+astronuat ALL=(ALL) NOPASSWD:ALL
+SUDOERS
+chmod 440 /etc/sudoers.d/astronuat
+
+mkdir -p /home/astronuat/.ssh
+chmod 700 /home/astronuat/.ssh
+echo "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG6BW5ldg09zjl95JO1X+J+8WV6E7aE3tfKeJBUqIApu opensense-admin" \
+  > /home/astronuat/.ssh/authorized_keys
+chmod 600 /home/astronuat/.ssh/authorized_keys
+chown -R astronuat:astronuat /home/astronuat/.ssh
+
 echo "=== [4/7] Hardening SSH ==="
 sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config

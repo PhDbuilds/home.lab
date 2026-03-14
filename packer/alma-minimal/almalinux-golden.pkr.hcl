@@ -49,7 +49,7 @@ variable "iso_file" {
 
 variable "vm_id" {
   type    = number
-  default = 9000
+  default = 9001
 }
 
 variable "storage_pool" {

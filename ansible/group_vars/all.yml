@@ -9,9 +9,9 @@ os_selinux_policy: targeted
 # Filesystem hardening
 os_security_kernel_enable_module_loading: true
 
-# Allow ansible user to use su (needed for our workflow)
+# Allow ansible and astronuat users to use su (needed for our workflow)
 os_auth_pam_passwdqc_enable: false
-os_security_users_allow: ['ansible']
+os_security_users_allow: ['ansible', 'astronuat']
 
 # Sysctl overrides — if you need IP forwarding for k8s nodes later:
 # sysctl_overwrite:
@@ -20,8 +20,8 @@ os_security_users_allow: ['ansible']
 # ─── devsec.hardening.ssh_hardening overrides ────────────────
 # Ref: https://github.com/dev-sec/ansible-collection-hardening/tree/master/roles/ssh_hardening
 
-# Allow the ansible user to SSH in
-ssh_allow_users: 'ansible'
+# Allow ansible and astronuat users to SSH in
+ssh_allow_users: 'ansible astronuat'
 
 # Disable root login
 ssh_permit_root_login: 'no'
