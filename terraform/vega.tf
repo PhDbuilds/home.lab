@@ -59,7 +59,7 @@ resource "proxmox_virtual_environment_vm" "vega" {
 
   initialization {
     dns {
-      servers = [each.value.gateway]
+      servers = ["10.0.0.1"]
       domain  = "home.lab"
     }
     ip_config {

@@ -46,7 +46,7 @@ resource "proxmox_virtual_environment_vm" "k3s_db" {
 
   initialization {
     dns {
-      servers = [each.value.gateway]
+      servers = ["10.10.0.1"]
       domain  = "home.lab"
     }
     ip_config {
