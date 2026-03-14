@@ -51,7 +51,7 @@
         immediate: true
       loop:
         - 10249/tcp   # kube-proxy
-        - 10251/tcp   # kube-scheduler
+        - 10259/tcp   # kube-scheduler
         - 10257/tcp   # kube-controller-manager
 
     - name: Verify metrics endpoints are reachable
@@ -61,7 +61,7 @@
         status_code: [200, 401, 403]
       loop:
         - 10249
-        - 10251
+        - 10259
       register: metrics_check
 
     - name: Display metrics endpoint status
