@@ -6,19 +6,16 @@
     load_balancer_ip: "10.10.0.107"
     vault_k3s: "{{ lookup('community.hashi_vault.vault_kv2_get', 'k3s', mount_point='secret') }}"
   tasks:
-    - name: Open flannel VXLAN port
+- name: Open required ports
       ansible.posix.firewalld:
-        port: 8472/udp
+        port: "{{ item }}"
         state: enabled
         permanent: true
         immediate: true
-
-    - name: Open kubelet port
-      ansible.posix.firewalld:
-        port: 10250/tcp
-        state: enabled
-        permanent: true
-        immediate: true
+      loop:
+        - 8472/udp    # flannel VXLAN
+        - 10250/tcp   # kubelet
+        - 9100/tcp    # node-exporter
 
     - name: Install K3s Agent
       shell: |
