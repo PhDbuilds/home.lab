@@ -73,15 +73,15 @@
         enabled: true
 
 - name: Open load balancer ports
-      ansible.posix.firewalld:
-        port: "{{ item }}"
-        state: enabled
-        permanent: true
-        immediate: true
-      loop:
-        - 6443/tcp
-        - 80/tcp
-        - 443/tcp
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  loop:
+    - 6443/tcp
+    - 80/tcp
+    - 443/tcp
 
   handlers:
     - name: Restart Nginx
