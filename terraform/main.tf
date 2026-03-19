@@ -18,3 +18,10 @@ module "polaris" {
   source = "./modules/OPNsense"
 }
 
+module "sirius" {
+  source = "./modules/alma-full/"
+}
+
+module "alma-minimal" {
+  source = "./modules/alma-minimal/"
+}
