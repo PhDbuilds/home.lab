@@ -8,16 +8,15 @@ terraform {
   }
 }
 
-resource "proxmox_virtual_environment_vm" "polaris" {
-  name          = "polaris"
+resource "proxmox_virtual_environment_vm" "sirius" {
+  name          = "sirius"
+  vm_id         = 101
   node_name     = "lab"
-  on_boot       = true
-  started       = true
   scsi_hardware = "virtio-scsi-single"
   machine       = "q35"
   bios          = "ovmf"
-  description   = "OPNsense"
-  tags          = ["firewall", "terraform"]
+  description   = "Jumphost"
+  tags          = ["jumphost", "terraform"]
 
   cpu {
     cores   = 2
@@ -26,23 +25,16 @@ resource "proxmox_virtual_environment_vm" "polaris" {
   }
 
   cdrom {
-    #file_id = "local:iso/OPNsense-26.1.2-dvd-amd64.iso"
-    file_id = "none"
-  }
+    file_id = "local:iso/AlmaLinux-10.1-x86_64-dvd.iso"
 
-  agent {
-    enabled = true
-    timeout = "15m"
-    trim    = false
-    type    = "virtio"
   }
 
   operating_system {
-    type = "other"
+    type = "l26"
   }
 
   memory {
-    dedicated = 2048
+    dedicated = 3072
   }
 
   #  efi_disk {
@@ -54,13 +46,13 @@ resource "proxmox_virtual_environment_vm" "polaris" {
     datastore_id = "local-lvm"
     interface    = "scsi0"
     iothread     = true
-    size         = 25
+    size         = 50
   }
 
   initialization {
     ip_config {
       ipv4 {
-        address = "10.0.0.2/24"
+        address = "10.0.0.7/24"
         gateway = "10.0.0.1"
       }
 
@@ -71,30 +63,11 @@ resource "proxmox_virtual_environment_vm" "polaris" {
     }
   }
 
-  # WAN
-  network_device {
-    bridge = "vmbr0"
-  }
-
-  # MANAGEMENT
+  # LAN
   network_device {
     bridge = "vmbr1"
   }
 
-  # PROD
-  network_device {
-    bridge = "vmbr2"
-  }
-
-  # TEST
-  network_device {
-    bridge = "vmbr3"
-  }
-
-  #  # SECLAB
-  #  network_device {
-  #    bridge = "vmbr4"
-  #  }
 
 }
 
