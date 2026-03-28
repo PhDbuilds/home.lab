@@ -1,5 +1,5 @@
 terraform {
-  required_version = "1.14.7"
+  required_version = ">= 1.14.7"
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
@@ -25,7 +25,8 @@ resource "proxmox_virtual_environment_vm" "sirius" {
   }
 
   cdrom {
-    file_id = "local:iso/AlmaLinux-10.1-x86_64-dvd.iso"
+    # file_id = "local:iso/AlmaLinux-10.1-x86_64-dvd.iso"
+    file_id = "none"
 
   }
 

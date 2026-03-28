@@ -1,5 +1,5 @@
 terraform {
-  required_version = "1.14.7"
+  required_version = ">= 1.14.7"
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
@@ -70,13 +70,18 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
     user_account {
       username = "astronuat"
     }
+    ip_config {
+      ipv4 {
+        address = each.value.address
+        gateway = each.value.gateway
+      }
+    }
   }
 
   # LAN
   network_device {
     bridge = each.value.bridge
   }
-
 
 }
 
