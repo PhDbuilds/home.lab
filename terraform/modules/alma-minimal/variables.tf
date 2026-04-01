@@ -8,6 +8,15 @@ variable "almalinux_vms" {
   }))
 
   default = {
+    "pulsar" = {
+      vm_id   = 900
+      bridge  = "vmbr1"
+      address = "10.0.0.3/24"
+      gateway = "10.0.0.1"
+      file_id = "local:iso/AlmaLinux-9-latest-x86_64-minimal.iso"
+    }
+
+    // Test machines
     "test-mgmt" = {
       vm_id   = 200
       bridge  = "vmbr1"

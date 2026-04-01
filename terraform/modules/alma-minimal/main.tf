@@ -27,7 +27,7 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
 
   cdrom {
     #file_id = "local:iso/AlmaLinux-10.1-x86_64-dvd.iso"
-    file_id = "none"
+    file_id = each.value.file_id
 
   }
 
