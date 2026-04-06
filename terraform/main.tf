@@ -1,34 +1,27 @@
-# -------------------------------------------------------------------
-# Proxmox Home Lab
-# -------------------------------------------------------------------
-
 terraform {
-  required_version = ">= 1.5.0"
-
+  required_version = ">= 1.14.7"
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "~> 0.78"
-    }
-    vault = {
-      source  = "hashicorp/vault"
-      version = "~> 4.0"
+      version = "0.98.1"
     }
   }
 }
 
-provider "vault" {
-  address = "http://10.0.0.101:8200"
-}
-
-data "vault_kv_secret_v2" "proxmox" {
-  mount = "secret"
-  name  = "terraform"
-}
-
 provider "proxmox" {
-  endpoint  = data.vault_kv_secret_v2.proxmox.data["proxmox_ve_endpoint"]
-  username  = data.vault_kv_secret_v2.proxmox.data["proxmox_ve_username"]
-  api_token = data.vault_kv_secret_v2.proxmox.data["proxmox_ve_api_token"]
-  insecure  = tobool(data.vault_kv_secret_v2.proxmox.data["proxmox_ve_insecure"])
+  api_token = var.proxmox_api_token
+  endpoint  = "https://192.168.1.180:8006"
+  insecure  = true
+}
+
+module "polaris" {
+  source = "./modules/OPNsense"
+}
+
+module "sirius" {
+  source = "./modules/alma-full/"
+}
+
+module "alma-minimal" {
+  source = "./modules/alma-minimal/"
 }
