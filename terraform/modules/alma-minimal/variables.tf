@@ -5,6 +5,8 @@ variable "almalinux_vms" {
     bridge  = string
     address = string
     gateway = string
+    cores   = optional(number, 2)
+    mem     = optional(number, 3072)
   }))
 
   default = {
@@ -13,7 +15,6 @@ variable "almalinux_vms" {
       bridge  = "vmbr1"
       address = "10.0.0.3/24"
       gateway = "10.0.0.1"
-      file_id = "local:iso/AlmaLinux-9-latest-x86_64-minimal.iso"
     }
 
     // Test machines
@@ -34,6 +35,14 @@ variable "almalinux_vms" {
       bridge  = "vmbr2"
       address = "10.20.0.7/24"
       gateway = "10.20.0.1"
+    }
+    "lfs-build" = {
+      vm_id   = 777
+      bridge  = "vmbr1"
+      address = "10.0.0.99/24"
+      gateway = "10.0.0.1"
+      cores   = 4
+      mem     = 8192
     }
   }
 }
