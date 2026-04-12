@@ -5,12 +5,14 @@ Fully (almost) automated homelab built on Proxmox using IaC stack
 ```
 Terraform  →  clones that image and provisions all VMs
 Ansible  →  configures and hardens everything post-boot
+Packer/Kickstart → builds and provisions golden image
 ```
 
 Secrets for all tools are stored in direnv/.envrc.
 
 - [`terraform/`](terraform/) — VM provisioning
 - [`ansible/`](ansible/) — Post-boot configuration and hardening
+- [`packer/`](packer/) — Builds AlmaLinux 9 minimal template
 
 ---
 
@@ -41,6 +43,7 @@ All networking is virtual inside Proxmox using Open vSwitch bridges. OPNsense (p
 
 - Terraform >= 1.5.0
 - Ansible >= 2.15
+- Packer >= 1.2.2
 - `direnv` (`sudo dnf install direnv`)
 
 ## Setup
