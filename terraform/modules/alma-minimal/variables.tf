@@ -10,12 +10,6 @@ variable "almalinux_vms" {
   }))
 
   default = {
-    "pulsar" = {
-      vm_id   = 900
-      bridge  = "vmbr1"
-      address = "10.0.0.3/24"
-      gateway = "10.0.0.1"
-    }
 
     // Test machines
     "test-mgmt" = {
@@ -36,14 +30,14 @@ variable "almalinux_vms" {
       address = "10.20.0.7/24"
       gateway = "10.20.0.1"
     }
-    "lfs-build" = {
-      vm_id   = 777
-      bridge  = "vmbr1"
-      address = "10.0.0.99/24"
-      gateway = "10.0.0.1"
-      cores   = 4
-      mem     = 8192
-    }
+    // "lfs-build" = {
+    //   vm_id   = 777
+    //   bridge  = "vmbr1"
+    //   address = "10.0.0.99/24"
+    //   gateway = "10.0.0.1"
+    //   cores   = 4
+    //   mem     = 8192
+    // }
   }
 }
 

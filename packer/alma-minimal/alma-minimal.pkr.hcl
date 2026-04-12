@@ -56,7 +56,7 @@ source "proxmox-iso" "alma-minimal-golden" {
     pre_enrolled_keys = false
   }
 
-  template_name        = "alma-scaffolding"
+  template_name        = "alma9-minimal"
   template_description = "AlmaLinux 9 Golden Image"
   os                   = "l26"
   qemu_agent = true
