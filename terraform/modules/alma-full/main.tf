@@ -69,6 +69,12 @@ resource "proxmox_virtual_environment_vm" "sirius" {
     bridge = "vmbr1"
   }
 
+  agent {
+    enabled = true
+    timeout = "15m"
+    trim    = false
+    type    = "virtio"
+  }
 
 }
 
