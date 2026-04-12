@@ -20,14 +20,14 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
   tags          = ["terraform"]
 
   cpu {
-    cores   = 2
+    cores   = each.value.cores
     sockets = 1
     type    = "host"
   }
 
   cdrom {
     #file_id = "local:iso/AlmaLinux-10.1-x86_64-dvd.iso"
-    file_id = each.value.file_id
+    file_id = "none"
 
   }
 
@@ -36,7 +36,7 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
   }
 
   memory {
-    dedicated = 3072
+    dedicated = each.value.mem
   }
 
 
