@@ -19,10 +19,6 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
   description   = "Alma minimal machines"
   tags          = ["terraform"]
 
-  clone {
-    vm_id = 9000
-  }
-
   cpu {
     cores   = each.value.cores
     sockets = 1
