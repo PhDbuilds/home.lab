@@ -15,7 +15,7 @@ variable "proxmox_node" {
 
 variable "vm_id" {
   type = number
-  default = 9000
+  default = 9001
 }
 
 variable "storage_pool" {
@@ -107,5 +107,22 @@ source "proxmox-iso" "alma-minimal-golden" {
 
 build {
   sources = ["source.proxmox-iso.alma-minimal-golden"]
+
+  provisioner "file" {
+    source = "../../keys/ansible.pub"
+    destination = "/tmp/ansible.pub"
+  }
+
+  provisioner "shell" {
+    inline = [
+      "echo 'Create newuser ansible and group'",
+      "sudo groupadd ansible",
+      "sudo useradd -m -g ansible -s /bin/bash -c \"ansible\" ansible"
+      "sudo runuser -l ansible -c 'mkdir /home/ansible/.ssh'"
+      "sudo cp /tmp/ansible.pub /home/ansible/.ssh/authorized_keys",
+      "sudo chmod 600 /home/ansible/.ssh/authorized_keys",
+      "sudo chmod 600 /home/ansible/.ssh/"
+    ]
+  }
 }
 
