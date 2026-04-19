@@ -1,0 +1,8 @@
+---
+# Firewall
+firewalld_allowed_services:
+  - ssh
+
+# Automatic updates
+enable_auto_updates: true
+auto_update_type: security
