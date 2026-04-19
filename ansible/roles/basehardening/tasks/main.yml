@@ -1,0 +1,50 @@
+---
+# ─── Firewalld ────────────────────────────────────────────────
+- name: Ensure firewalld is installed
+  ansible.builtin.dnf:
+    name: firewalld
+    state: present
+
+- name: Ensure firewalld is running and enabled
+  ansible.builtin.systemd:
+    name: firewalld
+    state: started
+    enabled: true
+
+- name: Set allowed firewall services
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    state: enabled
+    permanent: true
+    immediate: true
+  loop: "{{ firewalld_allowed_services }}"
+
+# ─── Automatic Security Updates ──────────────────────────────
+- name: Install dnf-automatic
+  ansible.builtin.dnf:
+    name: dnf-automatic
+    state: present
+  when: enable_auto_updates
+
+- name: Configure dnf-automatic update type
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: "^upgrade_type"
+    line: "upgrade_type = {{ auto_update_type }}"
+  when: enable_auto_updates
+  notify: Restart dnf-automatic timer
+
+- name: Enable apply_updates in dnf-automatic
+  ansible.builtin.lineinfile:
+    path: /etc/dnf/automatic.conf
+    regexp: "^apply_updates"
+    line: "apply_updates = yes"
+  when: enable_auto_updates
+  notify: Restart dnf-automatic timer
+
+- name: Enable dnf-automatic timer
+  ansible.builtin.systemd:
+    name: dnf-automatic.timer
+    state: started
+    enabled: true
+  when: enable_auto_updates

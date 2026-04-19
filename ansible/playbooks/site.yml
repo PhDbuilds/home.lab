@@ -1,0 +1,7 @@
+---
+- name: Apply base hardening to all hosts
+  hosts: all
+  become: true
+
+  roles:
+    - role: basehardening
