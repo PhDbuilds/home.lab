@@ -30,6 +30,12 @@ variable "almalinux_vms" {
       address = "10.20.0.7/24"
       gateway = "10.20.0.1"
     }
+    "k8s-playground" = {
+      vm_id   = 203
+      bridge  = "vmbr1"
+      address = "10.0.0.70/24"
+      gateway = "10.0.0.1"
+    }
     // "lfs-build" = {
     //   vm_id   = 777
     //   bridge  = "vmbr1"

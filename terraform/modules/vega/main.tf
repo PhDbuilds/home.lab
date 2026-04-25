@@ -17,7 +17,7 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
   machine       = "q35"
   bios          = "ovmf"
   description   = "Alma minimal machines"
-  tags          = ["terraform"]
+  tags          = ["terraform", "monitoring"]
 
   cpu {
     cores   = each.value.cores
@@ -25,10 +25,12 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
     type    = "host"
   }
 
-  cdrom {
-    #file_id = "local:iso/AlmaLinux-10.1-x86_64-dvd.iso"
-    file_id = "none"
+  clone {
+    vm_id = 9000
+  }
 
+  cdrom {
+    file_id = "none"
   }
 
   operating_system {
@@ -47,17 +49,11 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
     type    = "virtio"
   }
 
-
-  #  efi_disk {
-  #    datastore_id = var.datastore_id
-  #    type         = "4m"
-  #  }
-
   disk {
     datastore_id = "local-lvm"
     interface    = "scsi0"
     iothread     = true
-    size         = 50
+    size         = 100
   }
 
   efi_disk {
@@ -68,7 +64,7 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
   initialization {
 
     user_account {
-      username = "astronuat"
+      username = "ansible"
     }
     ip_config {
       ipv4 {
