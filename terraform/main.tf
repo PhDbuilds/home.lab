@@ -29,3 +29,7 @@ module "alma-minimal" {
 module "vega" {
   source = "./modules/vega/"
 }
+
+module "miniflux" {
+  source = "./modules/miniflux/"
+}
