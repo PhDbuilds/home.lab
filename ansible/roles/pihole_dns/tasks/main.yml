@@ -1,0 +1,7 @@
+---
+- name: Set DNS server
+  ansible.builtin.shell: |
+    conn=$(nmcli -t -f NAME con show --active | head -1)
+    nmcli con mod "$conn" ipv4.dns "{{ dns_server }}"
+  changed_when: true
+  notify: Reload network connection
