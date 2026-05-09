@@ -46,6 +46,8 @@ storage:
           PublishPort=80:80/tcp
           Environment=TZ=America/New_York
           Environment=FTLCONF_webserver_api_password=changeme
+          Environment=FTLCONF_dns_listeningMode=all
+          Environment=FTLCONF_dns_upstreams=10.0.0.1
           Volume=pihole_data:/etc/pihole:Z
           Volume=pihole_dnsmasq:/etc/dnsmasq.d:Z
           AddCapability=NET_ADMIN
