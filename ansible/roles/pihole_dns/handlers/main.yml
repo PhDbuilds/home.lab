@@ -1,0 +1,3 @@
+---
+- name: Reload network connection
+  ansible.builtin.command: nmcli con up "{{ ansible_default_ipv4.alias }}"
