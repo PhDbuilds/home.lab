@@ -1,0 +1,60 @@
+
+variant: fcos
+version: 1.5.0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIER93Zz4hF16OEjzZstU1JtYfTHDPAgq8SUG1VsjJXiw blnorris777@gmail.com
+
+storage:
+  files:
+    - path: /etc/NetworkManager/system-connections/static.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=static
+          type=ethernet
+
+          [ipv4]
+          method=manual
+          addresses=10.0.0.53/24
+          gateway=10.0.0.1
+          dns=1.1.1.1;8.8.8.8
+
+          [ipv6]
+          method=disabled
+
+    - path: /etc/systemd/resolved.conf.d/no-stub.conf
+      contents:
+        inline: |
+          [Resolve]
+          DNSStubListener=no
+
+    - path: /etc/containers/systemd/pihole.container
+      contents:
+        inline: |
+          [Unit]
+          Description=PiHole DNS
+          After=network-online.target
+
+          [Container]
+          Image=docker.io/pihole/pihole:latest
+          PublishPort=53:53/tcp
+          PublishPort=53:53/udp
+          PublishPort=80:80/tcp
+          Environment=TZ=America/New_York
+          Environment=FTLCONF_webserver_api_password=changeme
+          Volume=pihole_data:/etc/pihole:Z
+          Volume=pihole_dnsmasq:/etc/dnsmasq.d:Z
+          AddCapability=NET_ADMIN
+
+          [Service]
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+
+systemd:
+  units:
