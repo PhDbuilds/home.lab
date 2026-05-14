@@ -8,31 +8,28 @@ terraform {
   }
 }
 
-resource "proxmox_virtual_environment_vm" "alma-minimal" {
-  for_each      = var.almalinux_vms
-  name          = each.key
-  vm_id         = each.value.vm_id
+resource "proxmox_virtual_environment_vm" "hubble" {
+  name          = "hubble"
+  vm_id         = 105
   node_name     = "lab"
   scsi_hardware = "virtio-scsi-single"
   machine       = "q35"
   bios          = "ovmf"
-  description   = "Alma minimal machines"
-  tags          = ["terraform"]
+  description   = "Ollama inference server"
+  tags          = ["ollama", "terraform"]
 
   clone {
     vm_id = 9001
   }
 
   cpu {
-    cores   = each.value.cores
+    cores   = 6
     sockets = 1
     type    = "host"
   }
 
   cdrom {
-    #file_id = "local:iso/AlmaLinux-10.1-x86_64-dvd.iso"
     file_id = "none"
-
   }
 
   operating_system {
@@ -40,9 +37,8 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
   }
 
   memory {
-    dedicated = each.value.mem
+    dedicated = 8192
   }
-
 
   agent {
     enabled = true
@@ -51,17 +47,20 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
     type    = "virtio"
   }
 
-
-  #  efi_disk {
-  #    datastore_id = var.datastore_id
-  #    type         = "4m"
-  #  }
-
+  # OS disk
   disk {
     datastore_id = "local-lvm"
     interface    = "scsi0"
     iothread     = true
-    size         = each.value.size
+    size         = 60
+  }
+
+  # Models disk
+  disk {
+    datastore_id = "local-lvm"
+    interface    = "scsi1"
+    iothread     = true
+    size         = 250
   }
 
   efi_disk {
@@ -69,28 +68,44 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
     type         = "4m"
   }
 
-  initialization {
+  vga {
+    type = "serial0"
+  }
 
+  serial_device {
+    device = "socket"
+  }
+
+  # GTX 1060 3GB — GP106 @ 01:00.0
+  hostpci {
+    device  = "hostpci0"
+    mapping = "gtx1060-gpu"
+    pcie    = true
+    rombar  = true
+  }
+
+  # GP106 HDMI audio @ 01:00.1
+  hostpci {
+    device  = "hostpci1"
+    mapping = "gtx1060-audio"
+    pcie    = true
+    rombar  = true
+  }
+
+  initialization {
     user_account {
       username = "astronuat"
       keys     = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIER93Zz4hF16OEjzZstU1JtYfTHDPAgq8SUG1VsjJXiw blnorris777@gmail.com"]
     }
     ip_config {
       ipv4 {
-        address = each.value.address
-        gateway = each.value.gateway
+        address = "10.0.0.60/24"
+        gateway = "10.0.0.1"
       }
     }
   }
 
-  # LAN
   network_device {
-    bridge = each.value.bridge
+    bridge = "vmbr1"
   }
-
-  lifecycle {
-    ignore_changes = [started]
-  }
-
 }
-
