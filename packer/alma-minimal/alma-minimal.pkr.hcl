@@ -115,13 +115,20 @@ build {
 
   provisioner "shell" {
     inline = [
-      "echo 'Create newuser ansible and group'",
-      "sudo groupadd ansible",
-      "sudo useradd -m -g ansible -s /bin/bash -c \"ansible\" ansible"
-      "sudo runuser -l ansible -c 'mkdir /home/ansible/.ssh'"
-      "sudo cp /tmp/ansible.pub /home/ansible/.ssh/authorized_keys",
-      "sudo chmod 600 /home/ansible/.ssh/authorized_keys",
-      "sudo chmod 600 /home/ansible/.ssh/"
+      "groupadd ansible",
+      "useradd -m -g ansible -s /bin/bash -c 'ansible' ansible",
+      "mkdir -p /home/ansible/.ssh",
+      "cp /tmp/ansible.pub /home/ansible/.ssh/authorized_keys",
+      "chown -R ansible:ansible /home/ansible/.ssh",
+      "chmod 700 /home/ansible/.ssh",
+      "chmod 600 /home/ansible/.ssh/authorized_keys"
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "cloud-init clean --logs",
+      "sync"
     ]
   }
 }
