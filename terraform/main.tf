@@ -33,3 +33,7 @@ module "vega" {
 module "fcos-pihole" {
   source = "./modules/fcos-pihole/"
 }
+
+module "hubble" {
+  source = "./modules/hubble/"
+}
