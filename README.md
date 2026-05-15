@@ -26,6 +26,9 @@ VMs use a space-themed naming scheme. Mostly..
 |------|-------|------|---------|----|
 | polaris | 100 | Firewall / router (OPNsense) | All bridges | — |
 | sirius | 101 | Jumphost | MGMT | 10.0.0.7 |
+| vega | 102 | Grafana | MGMT | 10.0.0.3 |
+| hubble | 105 | Ollama | MGMT | 10.0.0.60 |
+| pihole | 401 | pihole | MGMT | 10.0.0.53 |
 | pulsar | 900 | PXE server | MGMT | 10.0.0.8 |
 
 ## Network Layout
@@ -38,6 +41,7 @@ All networking is virtual inside Proxmox using Open vSwitch bridges. OPNsense (p
 | vmbr1 | Management | 10.0.0.0/24 | 10.0.0.1 | Full access everywhere |
 | vmbr2 | Prod | 10.10.0.0/24 | 10.10.0.1 | Internet only, no cross-network |
 | vmbr3 | Test | 10.20.0.0/24 | 10.20.0.1 | Test network |
+| vmbr4 | SecLab | 10.30.0.0/24 | - | Airgapped network |
 
 ## Prerequisites
 
