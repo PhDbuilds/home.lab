@@ -1,0 +1,5 @@
+- name: Deploy Ollama on Hubble
+  hosts: hubble
+  become: true
+  roles:
+    - role: hubble_ollama

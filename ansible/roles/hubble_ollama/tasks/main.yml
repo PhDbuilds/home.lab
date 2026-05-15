@@ -1,0 +1,102 @@
+---
+- name: Create ollama directory
+  ansible.builtin.file:
+    path: "{{ ollama_data_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Create filesystem on ollama disk
+  ansible.builtin.filesystem:
+    fstype: ext4
+    dev: "{{ ollama_disk_device }}"
+
+- name: Mount ollama directory
+  ansible.builtin.mount:
+    path: "{{ ollama_data_dir }}"
+    src: "{{ ollama_disk_device }}"
+    fstype: ext4
+    opts: defaults
+    state: mounted
+
+- name: Install RPMFusion free and nonfree repositories
+  ansible.builtin.dnf:
+    name:
+      - https://mirrors.rpmfusion.org/free/el/rpmfusion-free-release-9.noarch.rpm
+      - https://mirrors.rpmfusion.org/nonfree/el/rpmfusion-nonfree-release-9.noarch.rpm
+    state: present
+    disable_gpg_check: true
+
+- name: Install NVIDIA driver matching GPU
+  ansible.builtin.dnf:
+    name:
+      - akmod-nvidia
+      - xorg-x11-drv-nvidia
+    state: present
+  register: nvidia_driver_install
+
+- name: Build NVIDIA kernel module
+  ansible.builtin.command:
+    cmd: akmods --force --kernels {{ ansible_kernel }}
+  when: nvidia_driver_install.changed
+
+- name: Rebuild initramfs
+  ansible.builtin.command:
+    cmd: dracut --force
+  when: nvidia_driver_install.changed
+
+- name: Reboot for NVIDIA driver
+  ansible.builtin.reboot:
+    reboot_timeout: 300
+  when: nvidia_driver_install.changed
+
+- name: Add nvidia-container-toolkit repository
+  ansible.builtin.get_url:
+    url: https://nvidia.github.io/libnvidia-container/stable/rpm/nvidia-container-toolkit.repo
+    dest: /etc/yum.repos.d/nvidia-container-toolkit.repo
+    mode: "0644"
+
+- name: Install nvidia-container-toolkit
+  ansible.builtin.dnf:
+    name: nvidia-container-toolkit
+    state: present
+
+- name: Generate CDI specification for NVIDIA GPU
+  ansible.builtin.command:
+    cmd: nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml
+    creates: /etc/cdi/nvidia.yaml
+
+- name: Install podman
+  ansible.builtin.dnf:
+    name: podman
+    state: present
+
+- name: Install ollama quadlet for systemd
+  ansible.builtin.copy:
+    dest: /etc/containers/systemd/ollama.container
+    mode: "0644"
+    content: |
+      [Container]
+      ContainerName=ollama
+      Image=docker.io/ollama/ollama:latest
+      Environment=OLLAMA_HOST=0.0.0.0:11434
+      PublishPort=127.0.0.1:11434:11434
+      Volume={{ ollama_data_dir }}:/root/.ollama:z
+      AddDevice=nvidia.com/gpu=all
+
+      [Service]
+      Restart=always
+
+      [Install]
+      WantedBy=default.target
+  notify: Reload systemd and restart ollama
+
+- name: Enable ollama via systemd quadlet
+  ansible.builtin.systemd:
+    name: ollama
+    enabled: true
+    daemon_reload: true
+    state: started
+
+

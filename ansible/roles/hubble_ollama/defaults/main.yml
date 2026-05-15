@@ -1,0 +1,2 @@
+ollama_disk_device: /dev/sdb
+ollama_data_dir: /var/lib/ollama
