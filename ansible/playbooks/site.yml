@@ -1,8 +1,9 @@
 ---
-- name: Apply base hardening to all hosts and add DNS
+- name: Apply base hardening to all hosts, add DNS, and add step-ca
   hosts: all
   become: true
 
   roles:
     - role: basehardening
     - role: pihole_dns
+    - role: step_ca
