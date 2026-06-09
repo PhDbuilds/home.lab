@@ -1,0 +1,15 @@
+---
+caddy_site_name: ollama.home.lab
+caddy_upstream: "127.0.0.1:11434"
+
+# The cert for ollama.home.lab is obtained from step-ca (on sirius) via ACME,
+# configured in the global options block below. The site therefore needs no
+# explicit `tls` directive, so this is empty. Set it only if you switch to a
+# static cert (e.g. "/etc/caddy/ollama.crt /etc/caddy/ollama.key").
+caddy_tls: ""
+
+# Global options block: point Caddy's ACME client at the homelab step-ca and
+# trust its root so the issued cert chains correctly.
+caddy_global_options: |
+  acme_ca https://sirius.home.lab:8443/acme/acme/directory
+  acme_ca_root /etc/ssl/certs/homelab-ca.crt

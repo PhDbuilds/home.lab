@@ -1,0 +1,15 @@
+# Managed by Ansible (roles/caddy) — do not edit on the host.
+{% if caddy_global_options %}
+{
+{{ caddy_global_options | trim | indent(4, true) }}
+}
+
+{% endif %}
+{{ caddy_site_name }} {
+    # Tailnet-only: listen on hubble's tailscale interface, not the MGMT NIC.
+    bind {{ tailscale_ip }}
+{% if caddy_tls %}
+    tls {{ caddy_tls }}
+{% endif %}
+    reverse_proxy {{ caddy_upstream }}
+}

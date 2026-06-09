@@ -1,0 +1,56 @@
+---
+- name: Require tailnet IP from the tailscale role
+  ansible.builtin.assert:
+    that:
+      - tailscale_ip is defined
+      - tailscale_ip | length > 0
+    fail_msg: >-
+      tailscale_ip is not set. Run the `tailscale` role before `caddy` so Caddy
+      can bind to the tailnet interface.
+
+- name: Install dnf copr plugin
+  ansible.builtin.dnf:
+    name: dnf-plugins-core
+    state: present
+
+- name: Enable Caddy COPR repository
+  ansible.builtin.command:
+    cmd: dnf -y copr enable @caddy/caddy
+    creates: /etc/yum.repos.d/_copr:copr.fedorainfracloud.org:group_caddy:caddy.repo
+
+- name: Install caddy
+  ansible.builtin.dnf:
+    name: caddy
+    state: present
+
+- name: Deploy Caddyfile
+  ansible.builtin.template:
+    src: Caddyfile.j2
+    dest: /etc/caddy/Caddyfile
+    owner: root
+    group: caddy
+    mode: "0644"
+    validate: caddy validate --adapter caddyfile --config %s
+  notify: Reload caddy
+
+- name: Enable and start caddy
+  ansible.builtin.systemd:
+    name: caddy
+    state: started
+    enabled: true
+
+# ─── Firewall: tailnet-only exposure ─────────────────────────
+- name: Place the tailscale interface in the trusted zone
+  ansible.posix.firewalld:
+    zone: trusted
+    interface: tailscale0
+    state: enabled
+    permanent: true
+    immediate: true
+
+- name: Remove https from the default zone (no broad-network exposure)
+  ansible.posix.firewalld:
+    service: https
+    state: disabled
+    permanent: true
+    immediate: true
