@@ -1,0 +1,53 @@
+---
+- name: Fail early if no Tailscale auth key is available
+  ansible.builtin.assert:
+    that:
+      - tailscale_authkey | length > 0
+    fail_msg: >-
+      tailscale_authkey is empty. Export a tagged, reusable auth key as
+      TS_AUTHKEY in .envrc (and run `direnv allow`) before running this role.
+
+- name: Add Tailscale repository
+  ansible.builtin.get_url:
+    url: https://pkgs.tailscale.com/stable/rhel/9/tailscale.repo
+    dest: /etc/yum.repos.d/tailscale.repo
+    mode: "0644"
+
+- name: Install tailscale
+  ansible.builtin.dnf:
+    name: tailscale
+    state: present
+    update_cache: true
+
+- name: Enable and start tailscaled
+  ansible.builtin.systemd:
+    name: tailscaled
+    state: started
+    enabled: true
+
+- name: Get current Tailscale backend state
+  ansible.builtin.command:
+    cmd: tailscale status --json
+  register: tailscale_status
+  changed_when: false
+  failed_when: false
+
+- name: Bring up Tailscale with tags
+  ansible.builtin.command:
+    cmd: >-
+      tailscale up
+      --authkey={{ tailscale_authkey }}
+      --advertise-tags={{ tailscale_tags }}
+      {{ tailscale_up_args }}
+  when: (tailscale_status.stdout | from_json).BackendState | default('NoState') != 'Running'
+  no_log: true
+
+- name: Get this node's tailnet IPv4 address
+  ansible.builtin.command:
+    cmd: tailscale ip -4
+  register: tailscale_ip_result
+  changed_when: false
+
+- name: Register tailnet IP fact for downstream roles
+  ansible.builtin.set_fact:
+    tailscale_ip: "{{ tailscale_ip_result.stdout | trim }}"
