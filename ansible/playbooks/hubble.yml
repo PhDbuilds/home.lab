@@ -1,5 +1,7 @@
-- name: Deploy Ollama on Hubble
+- name: Deploy Ollama on Hubble behind a tailnet-only Caddy
   hosts: hubble
   become: true
   roles:
     - role: hubble_ollama
+    - role: tailscale
+    - role: caddy

@@ -1,0 +1,11 @@
+---
+# Reusable, pre-authorized, tagged auth key. Stored in .envrc (gitignored) and
+# exported as TS_AUTHKEY, mirroring the TF_VAR_*/PKR_VAR_* convention.
+tailscale_authkey: "{{ lookup('env', 'TS_AUTHKEY') }}"
+
+# Tags this node advertises. Must already be defined in the tailnet policy
+# (tailscale/policy.hujson) before the node can claim them.
+tailscale_tags: "tag:ollama"
+
+# Extra flags passed to `tailscale up`.
+tailscale_up_args: "--accept-dns=false"

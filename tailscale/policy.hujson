@@ -1,0 +1,26 @@
+// Tailnet access policy for the home.lab tailnet.
+//
+// Source of truth for ACLs. Edits merged to `master` are synced to the tailnet
+// by .github/workflows/tailscale-acl.yml (tailscale/gitops-acl-action).
+//
+// Access model (issue #39): Ollama on hubble is fronted by Caddy on tcp:443 and
+// reachable ONLY over the tailnet. Identity is enforced by tags, not API keys:
+//   - hubble (the Ollama/Caddy node) is tagged `tag:ollama`
+//   - consuming devices/workloads are tagged `tag:llm-consumer`
+//   - the only path to `tag:ollama` is from `tag:llm-consumer` on port 443
+{
+  // Who may assign each tag (i.e. own devices carrying it).
+  "tagOwners": {
+    "tag:ollama":       ["autogroup:admin"],
+    "tag:llm-consumer": ["autogroup:admin"],
+  },
+
+  "acls": [
+    // LLM consumers may reach the Ollama node only on the Caddy TLS port.
+    {
+      "action": "accept",
+      "src":    ["tag:llm-consumer"],
+      "dst":    ["tag:ollama:443"],
+    },
+  ],
+}
