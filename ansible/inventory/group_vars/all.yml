@@ -1,0 +1,5 @@
+cluster_hosts:
+  - { name: k8s-jump,   ip: 10.0.0.30 }
+  - { name: k8s-server, ip: 10.0.0.31 }
+  - { name: k8s-node-0, ip: 10.0.0.32 }
+  - { name: k8s-node-1, ip: 10.0.0.33 }

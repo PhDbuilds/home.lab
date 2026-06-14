@@ -1,5 +1,5 @@
-- name: Kubernetes the Hard Way
-  hosts: k8s-jump
-  become: true
-  roles:
-    - role: k8s_jumpbox
+---
+- import_playbook: k8s_hosts.yml
+- import_playbook: k8s_jumpbox.yml
+# - import_playbook: server.yml
+# - import_playbook: nodes.yml
