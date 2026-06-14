@@ -3,35 +3,9 @@ arch: amd64
 
 # Versions
 k8s_version: "1.32.3"
-crictl_version: "1.32.0"
-runc_version: "1.3.0-rc.1"
-cni_version: "1.6.2"
-containerd_version: "2.1.0-beta.0"
-etcd_version: "3.6.0-rc.3"
 
 # Install locations.
 bin_dir: /usr/local/bin
-cni_bin_dir: /opt/cni/bin
-download_dir: /usr/local/src/k8s-binaries
 
-k8s_binaries:
-  - kubectl
-  - kube-apiserver
-  - kube-controller-manager
-  - kube-scheduler
-  - kube-proxy
-  - kubelet
-
-archives:
-  - name: crictl
-    url: "https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-{{ arch }}.tar.gz"
-    dest: "{{ bin_dir }}"
-    creates: "{{ bin_dir }}/crictl"
-  - name: cni-plugins
-    url: "https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-linux-{{ arch }}-v{{ cni_version }}.tgz"
-    dest: "{{ cni_bin_dir }}"
-    creates: "{{ cni_bin_dir }}/bridge"
-  - name: containerd
-    url: "https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-{{ arch }}.tar.gz"
-    dest: /usr/local # tarball nests under bin/ -> /usr/local/bin/*
-    creates: "{{ bin_dir }}/containerd"
+# Binary
+k8s_binary: "kubectl"

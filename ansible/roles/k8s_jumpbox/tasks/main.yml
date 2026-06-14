@@ -2,94 +2,14 @@
 - name: Ensure tooling is present
   ansible.builtin.package:
     name:
-      - tar
-      - gzip
       - git
       - vim
     state: present
 
-- name: Ensure target directories exist
-  ansible.builtin.file:
-    path: "{{ item }}"
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-  loop:
-    - "{{ bin_dir }}"
-    - "{{ cni_bin_dir }}"
-    - "{{ download_dir }}"
-
-- name: Install Kubernetes binaries from dl.k8s.io
+- name: Install kubectl from dl.k8s.io
   ansible.builtin.get_url:
-    url: "https://dl.k8s.io/v{{ k8s_version }}/bin/linux/{{ arch }}/{{ item }}"
-    dest: "{{ bin_dir }}/{{ item }}"
+    url: "https://dl.k8s.io/v{{ k8s_version }}/bin/linux/{{ arch }}/{{ k8s_binary }}"
+    dest: "{{ bin_dir }}/{{ k8s_binary }}"
     owner: root
     group: root
     mode: "0755"
-  loop: "{{ k8s_binaries }}"
-
-- name: Install runc
-  ansible.builtin.get_url:
-    url: "https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.{{ arch }}"
-    dest: "{{ bin_dir }}/runc"
-    owner: root
-    group: root
-    mode: "0755"
-
-- name: Download component archives
-  ansible.builtin.get_url:
-    url: "{{ item.url }}"
-    dest: "{{ download_dir }}/{{ item.url | basename }}"
-    owner: root
-    group: root
-    mode: "0644"
-  loop: "{{ archives }}"
-  loop_control:
-    label: "{{ item.name }}"
-
-- name: Extract component archives
-  ansible.builtin.unarchive:
-    src: "{{ download_dir }}/{{ item.url | basename }}"
-    dest: "{{ item.dest }}"
-    remote_src: true
-    owner: root
-    group: root
-    mode: "0755"
-    creates: "{{ item.creates }}"
-  loop: "{{ archives }}"
-  loop_control:
-    label: "{{ item.name }}"
-
-- name: Download etcd archive
-  ansible.builtin.get_url:
-    url: "https://github.com/etcd-io/etcd/releases/download/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-{{ arch }}.tar.gz"
-    dest: "{{ download_dir }}/etcd-v{{ etcd_version }}-linux-{{ arch }}.tar.gz"
-    owner: root
-    group: root
-    mode: "0644"
-
-- name: Extract etcd archive
-  ansible.builtin.unarchive:
-    src: "{{ download_dir }}/etcd-v{{ etcd_version }}-linux-{{ arch }}.tar.gz"
-    dest: "{{ download_dir }}"
-    remote_src: true
-    creates: "{{ download_dir }}/etcd-v{{ etcd_version }}-linux-{{ arch }}/etcd"
-
-- name: Install etcd binaries
-  ansible.builtin.copy:
-    src: "{{ download_dir }}/etcd-v{{ etcd_version }}-linux-{{ arch }}/{{ item }}"
-    dest: "{{ bin_dir }}/{{ item }}"
-    remote_src: true
-    owner: root
-    group: root
-    mode: "0755"
-  loop:
-    - etcd
-    - etcdctl
-    - etcdutl
-
-- name: Cleanup - Remove download cache
-  ansible.builtin.file:
-    path: "{{ download_dir }}"
-    state: absent
