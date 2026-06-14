@@ -1,0 +1,5 @@
+- name: Kubernetes the Hard Way
+  hosts: k8s-jump
+  become: true
+  roles:
+    - role: k8s_jumpbox
