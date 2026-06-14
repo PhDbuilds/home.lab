@@ -1,0 +1,6 @@
+---
+- name: Configure the jumpbox
+  hosts: k8s_jump
+  become: true
+  roles:
+    - role: k8s_jumpbox
