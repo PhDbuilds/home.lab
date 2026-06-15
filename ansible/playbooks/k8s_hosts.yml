@@ -1,6 +1,0 @@
----
-- name: Configure /etc/hosts across the cluster
-  hosts: kthw
-  become: true
-  roles:
-    - role: k8s_hosts
