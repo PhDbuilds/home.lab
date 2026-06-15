@@ -1,8 +1,9 @@
+---
 - name: Manage cluster entries in /etc/hosts
   ansible.builtin.blockinfile:
     path: /etc/hosts
     marker: "# {mark} ANSIBLE MANAGED: kubernetes-the-hard-way"
     block: |
       {% for host in cluster_hosts %}
-      {{ host.ip }} {{ host.name }}
+      {{ host.ip }} {{ host.name }}.{{ host_domain }} {{ host.name }}
       {% endfor %}
