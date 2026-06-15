@@ -1,0 +1,30 @@
+variant: fcos
+version: 1.6.0
+passwd:
+  users:
+    - name: core
+      ssh_authorized_keys:
+	- ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACKLXNLgOzn3YYB42O4JRZrQ0qimzpzdb21xi4yaV0N ansible@sirius
+	- ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIER93Zz4hF16OEjzZstU1JtYfTHDPAgq8SUG1VsjJXiw blnorris777@gmail.com
+
+
+systemd:
+  units:
+    - name: postinstall.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Layer python + guest agent, then reboot
+        Wants=network-online.target
+        After=network-online.target
+        Before=sshd.service
+        ConditionPathExists=!/var/lib/postinstall.done
+        [Service]
+        Type=oneshot
+        RemainAfterExit=yes
+        TimeoutStartSec=0
+        ExecStart=/usr/bin/rpm-ostree install qemu-guest-agent python3 python3-libselinux
+        ExecStart=/usr/bin/touch /var/lib/postinstall.done
+        ExecStart=/usr/bin/systemctl --no-block reboot
+        [Install]
+        WantedBy=multi-user.target
