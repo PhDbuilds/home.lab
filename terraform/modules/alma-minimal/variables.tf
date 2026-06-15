@@ -65,48 +65,48 @@ variable "almalinux_vms" {
 
     // K8s the Hard Way
     // jumpbox
-    "k8s-jump" = {
-      vm_id   = 500
-      bridge  = "vmbr1"
-      address = "10.0.0.30/24"
-      gateway = "10.0.0.1"
-      cores   = 1
-      mem     = 512
-      size    = 20
-    }
-
-    // server
-    "k8s-server" = {
-      vm_id   = 501
-      bridge  = "vmbr1"
-      address = "10.0.0.31/24"
-      gateway = "10.0.0.1"
-      cores   = 1
-      mem     = 2048
-      size    = 20
-    }
-
-    // node-0
-    "k8s-node-0" = {
-      vm_id   = 502
-      bridge  = "vmbr1"
-      address = "10.0.0.32/24"
-      gateway = "10.0.0.1"
-      cores   = 1
-      mem     = 2048
-      size    = 20
-    }
-
-    // node 1
-    "k8s-node-1" = {
-      vm_id   = 503
-      bridge  = "vmbr1"
-      address = "10.0.0.33/24"
-      gateway = "10.0.0.1"
-      cores   = 1
-      mem     = 2048
-      size    = 20
-    }
-  }
-}
-
+//    "k8s-jump" = {
+//      vm_id   = 500
+//      bridge  = "vmbr1"
+//      address = "10.0.0.30/24"
+//      gateway = "10.0.0.1"
+//      cores   = 1
+//      mem     = 512
+//      size    = 20
+//    }
+//
+//    // server
+//    "k8s-server" = {
+//      vm_id   = 501
+//      bridge  = "vmbr1"
+//      address = "10.0.0.31/24"
+//      gateway = "10.0.0.1"
+//      cores   = 1
+//      mem     = 2048
+//      size    = 20
+//    }
+//
+//    // node-0
+//    "k8s-node-0" = {
+//      vm_id   = 502
+//      bridge  = "vmbr1"
+//      address = "10.0.0.32/24"
+//      gateway = "10.0.0.1"
+//      cores   = 1
+//      mem     = 2048
+//      size    = 20
+//    }
+//
+//    // node 1
+//    "k8s-node-1" = {
+//      vm_id   = 503
+//      bridge  = "vmbr1"
+//      address = "10.0.0.33/24"
+//      gateway = "10.0.0.1"
+//      cores   = 1
+//      mem     = 2048
+//      size    = 20
+//    }
+//  }
+//}
+//
