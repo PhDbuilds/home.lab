@@ -1,4 +1,12 @@
 ---
+- name: Stop cloud-init from managing /etc/hosts
+  ansible.builtin.copy:
+    dest: /etc/cloud/cloud.cfg.d/99-disable-manage-etc-hosts.cfg
+    content: "manage_etc_hosts: false\n"
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: Manage cluster entries in /etc/hosts
   ansible.builtin.blockinfile:
     path: /etc/hosts
