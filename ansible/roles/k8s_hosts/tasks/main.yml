@@ -15,3 +15,17 @@
       {% for host in cluster_hosts %}
       {{ host.ip }} {{ host.name }}.{{ host_domain }} {{ host.name }}
       {% endfor %}
+
+- name: Stop cloud-init from resetting hostname and /etc/hosts
+  ansible.builtin.copy:
+    dest: /etc/cloud/cloud.cfg.d/99-kthw.cfg
+    content: |
+      preserve_hostname: true
+      manage_etc_hosts: false
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Set the canonical KTHW hostname
+  ansible.builtin.hostname:
+    name: "{{ inventory_hostname }}"
