@@ -4,8 +4,8 @@ passwd:
   users:
     - name: core
       ssh_authorized_keys:
-	- ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACKLXNLgOzn3YYB42O4JRZrQ0qimzpzdb21xi4yaV0N ansible@sirius
-	- ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIER93Zz4hF16OEjzZstU1JtYfTHDPAgq8SUG1VsjJXiw blnorris777@gmail.com
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIACKLXNLgOzn3YYB42O4JRZrQ0qimzpzdb21xi4yaV0N ansible@sirius
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIER93Zz4hF16OEjzZstU1JtYfTHDPAgq8SUG1VsjJXiw blnorris777@gmail.com
 
 
 systemd:
