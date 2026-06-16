@@ -108,4 +108,8 @@ resource "proxmox_virtual_environment_vm" "hubble" {
   network_device {
     bridge = "vmbr1"
   }
+
+  lifecycle {
+    ignore_changes = [started]
+  }
 }

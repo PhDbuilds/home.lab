@@ -4,7 +4,7 @@ variable "fcos_vms" {
     vm_id  = number
     mac    = string
     bridge = optional(string, "vmbr1")
-    cores  = optional(number, 2)
+    cores  = optional(number, 3)
     mem    = optional(number, 2046)
     size   = optional(number, 50)
   }))
