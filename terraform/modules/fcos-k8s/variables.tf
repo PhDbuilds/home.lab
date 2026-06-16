@@ -4,8 +4,8 @@ variable "fcos_vms" {
     vm_id  = number
     mac    = string
     bridge = optional(string, "vmbr1")
-    cores  = optional(number, 3)
-    mem    = optional(number, 2046)
+    cores  = optional(number, 2)
+    mem    = optional(number, 4096)
     size   = optional(number, 50)
   }))
   default = {
@@ -13,7 +13,6 @@ variable "fcos_vms" {
       vm_id = 500
       mac   = "BC:24:11:00:01:10"
       cores = 4
-      mem   = 4096
     }
     "triangulum-beta" = {
       vm_id = 501
