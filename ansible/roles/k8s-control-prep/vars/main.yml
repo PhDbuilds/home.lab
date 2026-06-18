@@ -1,0 +1,3 @@
+control_plane_endpoint: "k8sapi.home.lab"
+pod_subnet: "10.244.0.0/16"
+service_subnet: "10.96.0.0/12"

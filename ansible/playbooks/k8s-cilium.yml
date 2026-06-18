@@ -1,0 +1,9 @@
+---
+- name: Configure Cilium
+  hosts: control
+  become: true
+  environment:
+    KUBECONFIG: /etc/kubernetes/admin.conf
+
+  roles:
+    - role: k8s-cilium

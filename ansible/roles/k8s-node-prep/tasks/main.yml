@@ -43,7 +43,7 @@
 - name: Layer CRI-O (Fedora) + kube tooling (pkgs.k8s.io)
   community.general.rpm_ostree_pkg:
     name:
-      - cri-o
+      - "cri-o{{ k8s_version }}"
       - kubelet
       - kubeadm
       - kubectl
@@ -65,3 +65,21 @@
   ansible.builtin.systemd:
     name: kubelet
     enabled: true
+
+- name: /etc/hosts entry for the control-plane endpoint
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    line: "{{ control_plane_ip }} {{ control_plane_endpoint }}"
+    regexp: " {{ control_plane_endpoint }}$"
+
+- name: Find CRI-O bridge CNI configs
+  ansible.builtin.find:
+    paths: /etc/cni/net.d
+    patterns: "*crio*"
+  register: crio_cni
+
+- name: Remove them so Cilium is the only CNI
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ crio_cni.files }}"
