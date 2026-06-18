@@ -21,3 +21,8 @@ packer_cache/
 # OS junk
 .DS_Store
 Thumbs.db
+
+# K8s
+admin.conf
+*.kubeconfig
+**/.kube/config
