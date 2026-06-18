@@ -50,10 +50,15 @@
     state: present
   register: layering
 
-- name: Reboot into the new deployment
+- name: Check for a staged rpm-ostree deployment
+  ansible.builtin.command: rpm-ostree status --json
+  register: ostree_status
+  changed_when: false
+
+- name: Reboot into the new deployment (when one is staged but not booted)
   ansible.builtin.reboot:
     reboot_timeout: 600
-  when: layering.changed
+  when: not ((ostree_status.stdout | from_json).deployments[0].booted | default(true))
 
 - name: Enable + start CRI-O
   ansible.builtin.systemd:
