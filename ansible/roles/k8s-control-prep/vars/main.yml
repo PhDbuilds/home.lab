@@ -1,3 +1,6 @@
+---
 control_plane_endpoint: "k8sapi.home.lab"
 pod_subnet: "10.244.0.0/16"
 service_subnet: "10.96.0.0/12"
+cilium_version: "1.19.4"
+control_plane_ip: "10.0.0.20"
