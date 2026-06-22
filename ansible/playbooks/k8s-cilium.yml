@@ -1,7 +1,0 @@
----
-- name: Configure Cilium
-  hosts: control
-  become: true
-
-  roles:
-    - role: k8s-cilium

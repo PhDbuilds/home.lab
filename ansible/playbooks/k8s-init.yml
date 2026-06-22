@@ -5,9 +5,6 @@
 - name: Prep control
   import_playbook: k8s-control-prep.yml
 
-# - name: Configure Cilium
-#   import_playbook: k8s-cilium.yml
-
 - name: Join Workers
   import_playbook: k8s-join.yml
 
