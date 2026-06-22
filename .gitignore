@@ -14,6 +14,7 @@ packer_cache/
 
 # Ansible
 *.retry
+.ansible/
 
 # Secrets
 .envrc

@@ -7,4 +7,3 @@
 
 - name: Join Workers
   import_playbook: k8s-join.yml
-
