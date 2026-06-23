@@ -3,5 +3,4 @@
   become: true
   roles:
     - role: hubble_ollama
-    - role: tailscale
     - role: caddy
