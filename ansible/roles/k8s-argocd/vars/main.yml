@@ -1,0 +1,4 @@
+---
+argocd_chart_version: "9.6.0"
+argocd_namespace: "argocd"
+root_app_manifest: "{{ playbook_dir }}/../../gitops/bootstrap/root-app.yaml"

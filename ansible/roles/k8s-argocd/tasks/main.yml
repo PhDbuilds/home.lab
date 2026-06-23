@@ -1,2 +1,29 @@
 ---
-# Argocd tasks file
+- name: Add Helm repo and install chart
+  kubernetes.core.helm:
+    name: argocd
+    chart_ref: argo-cd
+    chart_version: "{{ argocd_chart_version }}"
+    repo_url: https://argoproj.github.io/argo-helm
+    release_namespace: "{{ argocd_namespace }}"
+    create_namespace: true
+    wait: true
+    values:
+      configs:
+        params:
+          server.insecure: true
+
+- name: Wait for argocd-server
+  kubernetes.core.k8s_info:
+    kind: Deployment
+    name: argocd-server
+    namespace: "{{ argocd_namespace }}"
+    wait: true
+    wait_condition:
+      type: Available
+      status: "True"
+
+- name: Apply root app-of-apps
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('file', root_app_manifest) | from_yaml }}"
