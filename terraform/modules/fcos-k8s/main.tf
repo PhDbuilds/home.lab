@@ -8,16 +8,19 @@ terraform {
   }
 }
 
-resource "proxmox_virtual_environment_vm" "alma-minimal" {
-  for_each      = var.almalinux_vms
+resource "proxmox_virtual_environment_vm" "fcos" {
+  for_each = var.fcos_vms
+
   name          = each.key
   vm_id         = each.value.vm_id
   node_name     = "lab"
+  description   = "FCOS Kubernetes node (PXE-provisioned)"
+  tags          = ["terraform", "fcos", "k8s"]
   scsi_hardware = "virtio-scsi-single"
   machine       = "q35"
   bios          = "ovmf"
-  description   = "Alma minimal machines"
-  tags          = ["terraform", "monitoring"]
+
+  boot_order = ["scsi0", "net0"]
 
   cpu {
     cores   = each.value.cores
@@ -25,22 +28,26 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
     type    = "host"
   }
 
-  clone {
-    vm_id = 9000
-  }
-
-  cdrom {
-    file_id = "none"
-  }
-
-  operating_system {
-    type = "l26"
-  }
-
   memory {
     dedicated = each.value.mem
   }
 
+  disk {
+    datastore_id = "local-lvm"
+    interface    = "scsi0"
+    iothread     = true
+    size         = each.value.size
+  }
+
+  efi_disk {
+    datastore_id = "local-lvm"
+    type         = "4m"
+  }
+
+  network_device {
+    bridge      = each.value.bridge
+    mac_address = each.value.mac
+  }
 
   agent {
     enabled = true
@@ -49,38 +56,11 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
     type    = "virtio"
   }
 
-  disk {
-    datastore_id = "local-lvm"
-    interface    = "scsi0"
-    iothread     = true
-    size         = 100
-  }
-
-  efi_disk {
-    datastore_id = "local-lvm"
-    type         = "4m"
-  }
-
-  initialization {
-
-    user_account {
-      username = "ansible"
-    }
-    ip_config {
-      ipv4 {
-        address = each.value.address
-        gateway = each.value.gateway
-      }
-    }
-  }
-
-  # LAN
-  network_device {
-    bridge = each.value.bridge
+  operating_system {
+    type = "l26"
   }
 
   lifecycle {
     ignore_changes = [started]
   }
 }
-

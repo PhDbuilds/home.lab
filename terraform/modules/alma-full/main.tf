@@ -76,5 +76,8 @@ resource "proxmox_virtual_environment_vm" "sirius" {
     type    = "virtio"
   }
 
+  lifecycle {
+    ignore_changes = [started]
+  }
 }
 

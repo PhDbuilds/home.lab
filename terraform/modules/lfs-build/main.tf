@@ -83,5 +83,8 @@ resource "proxmox_virtual_environment_vm" "alma-minimal" {
     bridge = each.value.bridge
   }
 
+  lifecycle {
+    ignore_changes = [started]
+  }
 }
 

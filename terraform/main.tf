@@ -37,3 +37,7 @@ module "fcos-pihole" {
 module "hubble" {
   source = "./modules/hubble/"
 }
+
+module "fcos-k8s" {
+  source = "./modules/fcos-k8s/"
+}

@@ -1,0 +1,7 @@
+---
+- name: Prepare FCOS nodes for kubeadm
+  hosts: k8s
+  become: true
+
+  roles:
+    - role: k8s-node-prep
