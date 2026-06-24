@@ -79,6 +79,7 @@
 - name: Render Cilium values
   ansible.builtin.copy:
     dest: /etc/kubernetes/cilium-values.yaml
+    mode: "0644"
     content: |
       kubeProxyReplacement: true
       k8sServiceHost: "{{ control_plane_ip }}"
@@ -90,7 +91,11 @@
       k8sClientRateLimit:
         qps: 10
         burst: 20
-    notify: Restart cilium
+      ingressController:
+        enabled: true
+        default: true
+        loadbalancerMode: shared
+  notify: Restart cilium
 
 - name: Install/upgrade Cilium
   ansible.builtin.command:
