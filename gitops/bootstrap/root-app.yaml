@@ -8,7 +8,7 @@ spec:
   project: default
   source:
     repoURL: https://github.com/phdbuilds/home.lab.git
-    targetRevision: enhancement/56-argocd-tls
+    targetRevision: master
     path: gitops/apps
   destination:
     server: https://kubernetes.default.svc
