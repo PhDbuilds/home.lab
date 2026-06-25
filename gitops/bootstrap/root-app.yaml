@@ -6,10 +6,13 @@ metadata:
   namespace: argocd
 spec:
   project: default
-  source:
-    repoURL: https://github.com/phdbuilds/home.lab.git
-    targetRevision: master
-    path: gitops/apps
+  sources:
+    - repoURL: https://github.com/phdbuilds/home.lab.git
+      targetRevision: master
+      path: gitops/apps/platform
+    - repoURL: https://github.com/phdbuilds/home.lab.git
+      targetRevision: master
+      path: gitops/apps/applications
   destination:
     server: https://kubernetes.default.svc
     namespace: argocd
@@ -17,3 +20,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
