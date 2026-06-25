@@ -1,3 +1,0 @@
----
-- name: Restart cilium
-  ansible.builtin.command: kubectl -n kube-system rollout restart ds/cilium
