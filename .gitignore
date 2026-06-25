@@ -27,3 +27,5 @@ Thumbs.db
 admin.conf
 *.kubeconfig
 **/.kube/config
+
+config
