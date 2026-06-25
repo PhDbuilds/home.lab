@@ -79,6 +79,7 @@
 - name: Render Cilium values
   ansible.builtin.copy:
     dest: /etc/kubernetes/cilium-values.yaml
+    mode: "0644"
     content: |
       kubeProxyReplacement: true
       k8sServiceHost: "{{ control_plane_ip }}"
@@ -90,16 +91,81 @@
       k8sClientRateLimit:
         qps: 10
         burst: 20
-    notify: Restart cilium
+      ingressController:
+        enabled: true
+        default: true
+        loadbalancerMode: shared
+  register: cilium_values
 
-- name: Install/upgrade Cilium
+- name: Upgrade Cilium
   ansible.builtin.command:
     cmd: >
       helm upgrade --install cilium cilium/cilium
       --namespace kube-system
       --version {{ cilium_version }}
       -f /etc/kubernetes/cilium-values.yaml
-      --wait
 
-- name: Restart CoreDNS onto Cilium networking
+- name: Restart cilium-operator to register Envoy/ingress CRDs
+  ansible.builtin.command: kubectl -n kube-system rollout restart deploy/cilium-operator
+  when: cilium_values.changed
+
+- name: Wait for cilium-operator
+  ansible.builtin.command: kubectl -n kube-system rollout status deploy/cilium-operator --timeout=120s
+  when: cilium_values.changed
+
+- name: Recreate cilium agents (fresh config; CRDs now exist)
+  ansible.builtin.command: kubectl -n kube-system rollout restart ds/cilium
+  when: cilium_values.changed
+
+- name: Wait for cilium agents
+  ansible.builtin.command: kubectl -n kube-system rollout status ds/cilium --timeout=240s
+  when: cilium_values.changed
+
+- name: Render CoreDNS config (kubeadm default + home.lab -> Pi-hole)
+  ansible.builtin.copy:
+    dest: /etc/kubernetes/coredns-config.yaml
+    mode: "0644"
+    content: |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: coredns
+        namespace: kube-system
+      data:
+        Corefile: |
+          .:53 {
+              errors
+              health {
+                 lameduck 5s
+              }
+              ready
+              kubernetes cluster.local in-addr.arpa ip6.arpa {
+                 pods insecure
+                 fallthrough in-addr.arpa ip6.arpa
+                 ttl 30
+              }
+              prometheus :9153
+              forward . /etc/resolv.conf {
+                 max_concurrent 1000
+              }
+              cache 30 {
+                 disable success cluster.local
+                 disable denial cluster.local
+              }
+              loop
+              reload
+              loadbalance
+          }
+          home.lab:53 {
+              errors
+              cache 30
+              forward . 10.0.0.53
+          }
+  register: coredns_cfg
+
+- name: Apply CoreDNS config
+  ansible.builtin.command: kubectl apply -f /etc/kubernetes/coredns-config.yaml
+
+- name: Restart CoreDNS
   ansible.builtin.command: kubectl -n kube-system rollout restart deployment coredns
+  when: coredns_cfg.changed

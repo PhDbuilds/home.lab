@@ -27,9 +27,6 @@
           configs:
             params:
               server.insecure: true
-          server:
-            service:
-              type: LoadBalancer
 
     - name: Wait for argocd-server
       kubernetes.core.k8s_info:
