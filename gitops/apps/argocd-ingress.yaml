@@ -5,6 +5,7 @@ metadata:
   namespace: argocd
   annotations:
     cert-manager.io/cluster-issuer: step-ca
+    ingress.cilium.io/force-https: "disabled"
 spec:
   ingressClassName: cilium
   rules:
