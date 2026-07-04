@@ -18,9 +18,9 @@ resource "proxmox_virtual_environment_vm" "hubble" {
   description   = "Ollama inference server"
   tags          = ["ollama", "terraform"]
 
-  clone {
-    vm_id = 9001
-  }
+  #  clone {
+  #    vm_id = 9001
+  #  }
 
   cpu {
     cores   = 6
