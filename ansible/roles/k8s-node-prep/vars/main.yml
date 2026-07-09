@@ -1,3 +1,9 @@
-k8s_version: "1.35"
+---
+server_group: server
+k3s_server_location: "/var/lib/rancher/k3s"
+systemd_dir: "/etc/systemd/system"
+api_port: 6443
+
+# k8s_version: "1.35"
 control_plane_ip: "10.0.0.20"
-control_plane_endpoint: "k8sapi.home.lab"
+control_plane_endpoint: "k3sapi.home.lab"
