@@ -13,14 +13,13 @@ variable "fcos_vms" {
       vm_id = 500
       mac   = "BC:24:11:00:01:10"
       cores = 3
+      mem   = 6144
     }
     "triangulum-beta" = {
       vm_id = 501
       mac   = "BC:24:11:00:01:11"
-    }
-    "triangulum-gamma" = {
-      vm_id = 502
-      mac   = "BC:24:11:00:01:12"
+      cores = 2
+      mem   = 4096
     }
   }
 }
