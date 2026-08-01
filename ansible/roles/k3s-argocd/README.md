@@ -1,4 +1,4 @@
-# k8s-argocd
+# k3s-argocd
 
 Bootstraps ArgoCD
 
@@ -8,5 +8,5 @@ Bootstraps ArgoCD
 ## Usage
 
 ```bash
-ansible-playbook playbooks/k8s-argocd.yml
+ansible-playbook playbooks/k3s-argocd.yml
 ```

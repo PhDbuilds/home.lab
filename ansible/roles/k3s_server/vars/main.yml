@@ -1,2 +1,3 @@
 ---
 k3s_api_endpoint: "k8sapi.home.lab"
+helm_version: "3.16.4"

@@ -1,6 +1,0 @@
----
-- name: Join workers to cluster
-  hosts: workers
-  become: true
-  roles:
-    - role: k8s-join

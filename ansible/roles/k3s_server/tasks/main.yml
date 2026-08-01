@@ -52,6 +52,19 @@
         group: core
         mode: "0600"
 
+- name: Fetch helm
+  ansible.builtin.unarchive:
+    src: "https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz"
+    dest: /tmp
+    remote_src: true
+    creates: /tmp/linux-amd64/helm
+- name: Install helm to /usr/local/bin (writable on FCOS)
+  ansible.builtin.copy:
+    src: /tmp/linux-amd64/helm
+    dest: /usr/local/bin/helm
+    mode: "0755"
+    remote_src: true
+
 - name: Fetch kubeconfig to sirius for local kubectl
   ansible.builtin.fetch:
     src: /etc/rancher/k3s/k3s.yaml

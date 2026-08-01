@@ -1,9 +1,0 @@
----
-- name: Prep the nodes
-  import_playbook: k8s-node-prep.yml
-
-- name: Prep control
-  import_playbook: k8s-control-prep.yml
-
-- name: Join Workers
-  import_playbook: k8s-join.yml

@@ -1,0 +1,9 @@
+---
+- name: Bootstrap ArgoCD
+  hosts: k3s_server
+  become: true
+  environment:
+    KUBECONFIG: /etc/rancher/k3s/k3s.yaml
+
+  roles:
+    - role: k3s-argocd
