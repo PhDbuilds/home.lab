@@ -16,6 +16,7 @@
   environment:
     INSTALL_K3S_CHANNEL: "{{ k3s_channel }}"
     INSTALL_K3S_SKIP_SELINUX_RPM: "true"
+    INSTALL_K3S_SKIP_START: "true"
   args:
     creates: /usr/local/bin/k3s
 
@@ -54,12 +55,12 @@
 - name: Fetch kubeconfig to sirius for local kubectl
   ansible.builtin.fetch:
     src: /etc/rancher/k3s/k3s.yaml
-    dest: ./k3s.yaml
+    dest: "~/.kube/config"
     flat: true
 
 - name: Point the fetched kubeconfig at the server
   ansible.builtin.replace:
-    path: ./k3s.yaml
+    path: "~/.kube/config"
     regexp: "https://127\\.0\\.0\\.1:6443"
     replace: "https://{{ k3s_api_endpoint }}:6443"
   delegate_to: localhost
