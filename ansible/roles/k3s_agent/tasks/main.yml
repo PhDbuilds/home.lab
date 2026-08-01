@@ -1,0 +1,40 @@
+---
+- name: Read the join token from the server
+  ansible.builtin.slurp:
+    src: /var/lib/rancher/k3s/server/node-token
+  delegate_to: "{{ groups['k3s_server'][0] }}"
+  register: node_token
+
+- name: k3s config directory
+  ansible.builtin.file:
+    path: /etc/rancher/k3s
+    state: directory
+    mode: "0755"
+
+- name: Render k3s agent config
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: /etc/rancher/k3s/config.yaml
+    mode: "0600"
+  vars:
+    k3s_node_token: "{{ node_token.content | b64decode | trim }}"
+
+- name: Install k3s agent
+  ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -s - agent
+  environment:
+    INSTALL_K3S_CHANNEL: "{{ k3s_channel }}"
+    INSTALL_K3S_SKIP_SELINUX_RPM: "true"
+    INSTALL_K3S_SKIP_START: "true"
+  args:
+    creates: /usr/local/bin/k3s
+
+- name: Fix SELinux labels (installer mv preserves tmp context)
+  ansible.builtin.command: restorecon -R -v /usr/local/bin
+  register: restorecon_out
+  changed_when: restorecon_out.stdout != ""
+
+- name: Enable + start k3s-agent
+  ansible.builtin.systemd:
+    name: k3s-agent
+    enabled: true
+    state: started

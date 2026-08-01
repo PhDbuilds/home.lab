@@ -1,0 +1,4 @@
+selinux: true
+tls-san:
+  - "{{ inventory_hostname }}"
+  - "{{ k3s_api_endpoint }}"
