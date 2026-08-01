@@ -19,6 +19,11 @@
   args:
     creates: /usr/local/bin/k3s
 
+- name: Fix SELinux labels (installer mv preserves tmp context)
+  ansible.builtin.command: restorecon -R -v /usr/local/bin
+  register: restorecon_out
+  changed_when: restorecon_out.stdout != ""
+
 - name: Enable + start k3s
   ansible.builtin.systemd:
     name: k3s
