@@ -1,0 +1,80 @@
+---
+- name: k3s config directory
+  ansible.builtin.file:
+    path: /etc/rancher/k3s
+    state: directory
+    mode: "0755"
+
+- name: Render k3s server config
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: /etc/rancher/k3s/config.yaml
+    mode: "0644"
+
+- name: Install k3s server
+  ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -s - server
+  environment:
+    INSTALL_K3S_CHANNEL: "{{ k3s_channel }}"
+    INSTALL_K3S_SKIP_SELINUX_RPM: "true"
+    INSTALL_K3S_SKIP_START: "true"
+  args:
+    creates: /usr/local/bin/k3s
+
+- name: Fix SELinux labels (installer mv preserves tmp context)
+  ansible.builtin.command: restorecon -R -v /usr/local/bin
+  register: restorecon_out
+  changed_when: restorecon_out.stdout != ""
+
+- name: Enable + start k3s
+  ansible.builtin.systemd:
+    name: k3s
+    enabled: true
+    state: started
+
+- name: Wait for the node token (agents join with this)
+  ansible.builtin.wait_for:
+    path: /var/lib/rancher/k3s/server/node-token
+    timeout: 120
+
+- name: kubeconfig for the core user
+  block:
+    - ansible.builtin.file:
+        path: /var/home/core/.kube
+        state: directory
+        owner: core
+        group: core
+        mode: "0700"
+    - ansible.builtin.copy:
+        src: /etc/rancher/k3s/k3s.yaml
+        dest: /var/home/core/.kube/config
+        remote_src: true
+        owner: core
+        group: core
+        mode: "0600"
+
+- name: Fetch helm
+  ansible.builtin.unarchive:
+    src: "https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz"
+    dest: /tmp
+    remote_src: true
+    creates: /tmp/linux-amd64/helm
+- name: Install helm to /usr/local/bin (writable on FCOS)
+  ansible.builtin.copy:
+    src: /tmp/linux-amd64/helm
+    dest: /usr/local/bin/helm
+    mode: "0755"
+    remote_src: true
+
+- name: Fetch kubeconfig to sirius for local kubectl
+  ansible.builtin.fetch:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: "~/.kube/config"
+    flat: true
+
+- name: Point the fetched kubeconfig at the server
+  ansible.builtin.replace:
+    path: "~/.kube/config"
+    regexp: "https://127\\.0\\.0\\.1:6443"
+    replace: "https://{{ k3s_api_endpoint }}:6443"
+  delegate_to: localhost
+  become: false

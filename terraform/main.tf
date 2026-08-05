@@ -26,10 +26,6 @@ module "alma-minimal" {
   source = "./modules/alma-minimal/"
 }
 
-module "vega" {
-  source = "./modules/vega/"
-}
-
 module "fcos-pihole" {
   source = "./modules/fcos-pihole/"
 }
