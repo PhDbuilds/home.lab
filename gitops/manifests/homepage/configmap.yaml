@@ -14,9 +14,7 @@ data:
     headerStyle: boxed
     background:
       image: https://images.unsplash.com/photo-1784871258261-700fb802a69e?q=80&w=2560&auto=format&fit=crop
-      saturate: 100
-      brightness: 60
-      opacity: 100
+      opacity: 70
     cardBlur: 3xl
   custom.css: ""
   custom.js: ""
