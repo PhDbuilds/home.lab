@@ -55,3 +55,4 @@ data:
         provider: duckduckgo
         target: _blank
   docker.yaml: ""
+  proxmox.yaml: ""
