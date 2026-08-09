@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: homepage
-  namespace: default
+  namespace: homepage
   labels:
     app.kubernetes.io/name: homepage
 data:
@@ -17,24 +17,21 @@ data:
   custom.js: ""
   bookmarks.yaml: |
     - Developer:
-        - Github:
+        - home.lab repo:
             - abbr: GH
-              href: https://github.com/
+              href: https://github.com/PhDbuilds/home.lab
   services.yaml: |
-    - My First Group:
-        - My First Service:
-            href: http://localhost/
-            description: Homepage is awesome
+    - Argo CD:
+        - Prod Argo CD:
+            icon: argocd.png
+            href: https://argocd.home.lab/
+            description: Prod Argo CD
 
-    - My Second Group:
-        - My Second Service:
-            href: http://localhost/
-            description: Homepage is the best
-
-    - My Third Group:
-        - My Third Service:
-            href: http://localhost/
-            description: Homepage is 😎
+    - Testing:
+        - Guestbook:
+            icon: mdi-book-open-variant
+            href: https://guestbook.home.lab/
+            description: Guestbook test app
   widgets.yaml: |
     - kubernetes:
         cluster:
