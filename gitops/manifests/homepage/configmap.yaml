@@ -23,28 +23,28 @@ data:
             - abbr: GH
               href: https://github.com/PhDbuilds/home.lab
   services.yaml: |
-    - Infrastructure:
+    - Virtualization:
         - Proxmox VE:
-            icon: argocd.png
+            icon: proxmox.png
             href: "https://192.168.1.180:8006/"
-            description: Proxmox VE
+            description: Proxmox VE hypervisor
 
-    - Argo CD:
-        - Prod Argo CD:
+    - Networking:
+        - OPNsense:
+            icon: opnsense.png
+            href: https://10.0.0.1/
+            description: OPNsense firewall
+        - Pi-hole:
+            icon: pi-hole.png
+            href: https://pihole.home.lab/
+            description: Pi-hole DNS sinkhole
+
+    - Cluster / GitOps:
+        - Argo CD:
             icon: argocd.png
             href: https://argocd.home.lab/
             description: Prod Argo CD
 
-    - Networking:
-        - PiHole:
-            icon: mdi-book-open-variant
-            href: https://pihole.home.lab/
-            description: Pihole DNS Sinkhole
-
-        - OPNsense:
-            icon: mdi-book-open-variant
-            href: https://10.0.0.1/
-            description: OPNsense Firewall
   widgets.yaml: |
     - kubernetes:
         cluster:
