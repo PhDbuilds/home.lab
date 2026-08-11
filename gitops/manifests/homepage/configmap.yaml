@@ -36,7 +36,7 @@ data:
             description: OPNsense firewall
         - Pi-hole:
             icon: pi-hole.png
-            href: https://pihole.home.lab/
+            href: http://pihole.home.lab/admin/login
             description: Pi-hole DNS sinkhole
 
     - Cluster / GitOps:
