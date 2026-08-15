@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  name: miniflux
+  namespace: miniflux
+  labels:
+    app.kubernetes.io/name: miniflux
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: miniflux
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: miniflux
+    spec:
+      containers:
+        - name: miniflux
+          image: "ghcr.io/miniflux/miniflux:2.2.15"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            seccompProfile:
+              type: RuntimeDefault
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: miniflux-db-app
+                  key: uri
+            - name: RUN_MIGRATIONS
+              value: "1"
+            - name: CREATE_ADMIN
+              value: "1"
+            - name: ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: miniflux-admin
+                  key: ADMIN_USERNAME
+            - name: ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: miniflux-admin
+                  key: ADMIN_PASSWORD
+            - name: BASE_URL
+              value: "https://miniflux.home.lab/"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
