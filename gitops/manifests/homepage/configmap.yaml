@@ -10,7 +10,7 @@ data:
     mode: cluster
   settings.yaml: |
     theme: dark
-    color: violet
+    color: slate
     headerStyle: boxed
     background:
       image: https://images.unsplash.com/photo-1502252430442-aac78f397426?q=80&w=1740&auto=format&fit=crop
