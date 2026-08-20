@@ -23,18 +23,16 @@ data:
     }
   custom.js: ""
   bookmarks.yaml: |
-    - Developer:
+    - Sites:
         - home.lab repo:
             - abbr: GH
               href: https://github.com/PhDbuilds/home.lab
   services.yaml: |
-    - Virtualization:
+    - Infrastructure:
         - Proxmox VE:
             icon: proxmox.png
             href: "https://192.168.1.180:8006/"
             description: Proxmox VE hypervisor
-
-    - Networking:
         - OPNsense:
             icon: opnsense.png
             href: https://10.0.0.1/
@@ -43,12 +41,15 @@ data:
             icon: pi-hole.png
             href: http://pihole.home.lab/admin/login
             description: Pi-hole DNS sinkhole
-
-    - Cluster / GitOps:
         - Argo CD:
-            icon: argocd.png
+            icon: argo-cd.png
             href: https://argocd.home.lab/
             description: Prod Argo CD
+    - Apps:
+        - MiniFlux:
+            icon: miniflux.svg
+            href: "https://miniflux.home.lab/"
+            description: News RSS Feed
 
   widgets.yaml: |
     - kubernetes:
