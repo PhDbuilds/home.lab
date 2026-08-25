@@ -49,6 +49,10 @@ data:
             icon: uptime-kuma.svg
             href: https://uptime-kuma.home.lab/
             description: Uptime Kuma Monitoring Tool
+            widget:
+              type: uptimekuma
+              url: http://uptime-kuma.monitoring.svc.cluster.local:3001
+              slug: home
     - Apps:
         - MiniFlux:
             icon: miniflux.svg
