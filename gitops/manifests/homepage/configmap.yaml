@@ -45,6 +45,10 @@ data:
             icon: argo-cd.png
             href: https://argocd.home.lab/
             description: Prod Argo CD
+        - Uptime-kuma:
+            icon: uptime-kuma.svg
+            href: https://uptime-kuma.home.lab/
+            description: Uptime Kuma Monitoring Tool
     - Apps:
         - MiniFlux:
             icon: miniflux.svg
