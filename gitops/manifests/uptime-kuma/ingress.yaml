@@ -16,7 +16,7 @@ spec:
               service:
                 name: uptime-kuma
                 port:
-                  number: 8080
+                  number: 3001
   tls:
     - hosts: [uptime-kuma.home.lab]
       secretName: uptime-kuma-tls

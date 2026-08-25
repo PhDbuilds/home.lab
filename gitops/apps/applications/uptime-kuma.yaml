@@ -11,7 +11,7 @@ spec:
     path: gitops/manifests/uptime-kuma
   destination:
     server: https://kubernetes.default.svc
-    namespace: uptime-kuma
+    namespace: monitoring
   syncPolicy:
     automated:
       prune: true

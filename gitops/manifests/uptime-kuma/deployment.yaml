@@ -10,7 +10,7 @@ spec:
   revisionHistoryLimit: 3
   replicas: 1
   strategy:
-    type: RollingUpdate
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: uptime-kuma
@@ -19,9 +19,11 @@ spec:
       labels:
         app.kubernetes.io/name: uptime-kuma
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
         - name: uptime-kuma
-          image: "ghcr.io/uptime-kuma/uptime-kuma:4.2.0"
+          image: "ghcr.io/louislam/uptime-kuma:2.5.0"
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
@@ -35,17 +37,25 @@ spec:
               type: RuntimeDefault
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 3001
               protocol: TCP
           livenessProbe:
-            httpGet:
-              path: /healthcheck
-              port: http
-            initialDelaySeconds: 10
-            periodSeconds: 15
+            exec:
+              command: ["extra/healthcheck"]
+            initialDelaySeconds: 180
+            periodSeconds: 10
+            failureThreshold: 3
           readinessProbe:
             httpGet:
-              path: /healthcheck
+              path: /
               port: http
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             periodSeconds: 10
+            failureThreshold: 3
+          volumeMounts:
+            - name: data
+              mountPath: /app/data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: uptime-kuma
