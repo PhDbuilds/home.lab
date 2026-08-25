@@ -27,6 +27,12 @@ data:
         - home.lab repo:
             - abbr: GH
               href: https://github.com/PhDbuilds/home.lab
+        - My Portfolio:
+            - abbr: MP
+              href: https://spacevoyager.club
+        - My Blog:
+            - abbr: MB
+              href: https://blog.spacevoyager.club
   services.yaml: |
     - Infrastructure:
         - Proxmox VE:
