@@ -51,6 +51,15 @@ data:
             icon: argo-cd.png
             href: https://argocd.home.lab/
             description: Prod Argo CD
+    - Monitoring:
+        - Grafana:
+            icon: grafana.png
+            href: https://grafana.home.lab/
+            description: Grafana infra monitoring
+        - Prometheus:
+            icon: prometheus.png
+            href: https://prometheus.home.lab/
+            description: Prometheus infra monitoring
         - Uptime-kuma:
             icon: uptime-kuma.svg
             href: https://uptime-kuma.home.lab/
