@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: logans-library
+  annotations:
+    reloader.stakater.com/auto: "true"
+  labels:
+    app.kubernetes.io/name: logans-library
+spec:
+  revisionHistoryLimit: 3
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: logans-library
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: logans-library
+    spec:
+      containers:
+        - name: web
+          image: "ghcr.io/phdbuilds/loganslibrary:main"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: loganslibrary-db
+                  key: MARIADB_PASSWORD
+          args:
+            - "-addr=:4000"
+            - "-dsn=web:$(DB_PASSWORD)@tcp(mariadb:3306)/loganslibrary?parseTime=true"
+          ports:
+            - name: http
+              containerPort: 4000
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            capabilities:
+              drop: [ALL]
+            seccompProfile:
+              type: RuntimeDefault
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: logans-library
+  labels:
+    app.kubernetes.io/name: logans-library
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+  selector:
+    app.kubernetes.io/name: logans-library
