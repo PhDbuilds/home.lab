@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: logans-library
+  annotations:
+    cert-manager.io/cluster-issuer: step-ca
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: library.home.lab
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: logans-library
+                port:
+                  number: 80
+  tls:
+    - hosts: [library.home.lab]
+      secretName: logans-library-tls
