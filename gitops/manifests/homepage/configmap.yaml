@@ -69,6 +69,10 @@ data:
               url: http://uptime-kuma.monitoring.svc.cluster.local:3001
               slug: home
     - Apps:
+        - Logan's Library:
+            icon: mdi-bookshelf
+            href: "https://library.home.lab/"
+            description: Personal book library
         - MiniFlux:
             icon: miniflux.svg
             href: "https://miniflux.home.lab/"
