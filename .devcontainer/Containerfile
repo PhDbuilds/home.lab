@@ -1,0 +1,209 @@
+# syntax=docker/dockerfile:1
+
+FROM fedora:44
+
+ARG USERNAME=dev
+ARG USER_UID=1000
+ARG USER_GID=1000
+
+# ============================================================
+# 1. BASE SYSTEM + DEVELOPMENT TOOLCHAIN
+# ============================================================
+
+# HashiCorp repo for terraform + packer
+RUN curl -fsSL https://rpm.releases.hashicorp.com/fedora/hashicorp.repo \
+    -o /etc/yum.repos.d/hashicorp.repo
+
+RUN dnf -y install \
+    # Homelab tooling
+    butane \
+    helm \
+    k9s \
+    kubernetes1.36-client \
+    packer \
+    terraform \
+    # Development
+    cmake \
+    gcc \
+    gcc-c++ \
+    gh \
+    git \
+    git-lfs \
+    golang \
+    make \
+    nodejs \
+    npm \
+    pipx \
+    python3 \
+    python3-devel \
+    python3-pip \
+    # Container tooling
+    buildah \
+    fuse-overlayfs \
+    passt \
+    podman \
+    podman-compose \
+    skopeo \
+    slirp4netns \
+    # System utilities
+    curl \
+    findutils \
+    gzip \
+    less \
+    man-db \
+    neovim \
+    procps-ng \
+    psmisc \
+    rsync \
+    shadow-utils \
+    sudo \
+    tar \
+    tmux \
+    tree \
+    unzip \
+    vim-enhanced \
+    wget \
+    which \
+    xz \
+    zip \
+    # Shell and productivity
+    fd-find \
+    fzf \
+    jq \
+    ripgrep \
+    zsh \
+    # Networking and troubleshooting
+    bind-utils \
+    ethtool \
+    iproute \
+    iputils \
+    lsof \
+    mtr \
+    nmap-ncat \
+    openssh-clients \
+    strace \
+    tcpdump \
+    traceroute \
+    whois \
+    # Security and cryptography
+    ca-certificates \
+    gnupg2 \
+    openssl \
+    && dnf clean all
+
+# ============================================================
+# 2. STARSHIP PROMPT
+# ============================================================
+
+RUN curl -fsSL https://starship.rs/install.sh | \
+    sh -s -- -y --bin-dir /usr/local/bin
+
+# ============================================================
+# 3. KUBESEAL (not packaged in Fedora)
+# ============================================================
+
+ARG KUBESEAL_VERSION=0.37.0
+RUN curl -fsSL "https://github.com/bitnami-labs/sealed-secrets/releases/download/v${KUBESEAL_VERSION}/kubeseal-${KUBESEAL_VERSION}-linux-amd64.tar.gz" \
+    | tar -xz -C /usr/local/bin kubeseal
+
+# ============================================================
+# 4. USER CONFIGURATION
+# ============================================================
+
+RUN groupadd --gid ${USER_GID} ${USERNAME} \
+    && useradd \
+        --uid ${USER_UID} \
+        --gid ${USER_GID} \
+        --create-home \
+        --shell /usr/bin/zsh \
+        ${USERNAME}
+
+# Rootless Podman subordinate UID/GID ranges
+RUN echo "${USERNAME}:100000:65536" > /etc/subuid \
+    && echo "${USERNAME}:100000:65536" > /etc/subgid
+
+# ============================================================
+# 5. ROOTLESS PODMAN CONFIGURATION
+# ============================================================
+
+RUN mkdir -p /home/${USERNAME}/.config/containers \
+    && printf '[storage]\ndriver = "overlay"\n\n[storage.options.overlay]\nmount_program = "/usr/bin/fuse-overlayfs"\n' \
+        > /home/${USERNAME}/.config/containers/storage.conf \
+    && chown -R ${USERNAME}:${USERNAME} /home/${USERNAME}/.config
+
+# ============================================================
+# 6. USER ENVIRONMENT
+# ============================================================
+
+ENV HOME=/home/${USERNAME}
+ENV SHELL=/usr/bin/zsh
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV PATH="/home/${USERNAME}/.local/bin:/usr/local/bin:${PATH}"
+
+# Zsh configuration
+RUN printf '%s\n' \
+    '# ----------------------------------------' \
+    '# ZSH CONFIGURATION' \
+    '# ----------------------------------------' \
+    'export EDITOR=nvim' \
+    'export VISUAL=nvim' \
+    'export PATH="$HOME/.local/bin:$PATH"' \
+    '' \
+    '# FZF' \
+    'source /usr/share/fzf/shell/key-bindings.zsh 2>/dev/null || true' \
+    'source /usr/share/fzf/shell/completion.zsh 2>/dev/null || true' \
+    '' \
+    '# Starship prompt' \
+    'eval "$(starship init zsh)"' \
+    > /home/${USERNAME}/.zshrc
+
+# Starship configuration directory
+RUN mkdir -p /home/${USERNAME}/.config \
+    && printf '%s\n' \
+    'add_newline = true' \
+    'command_timeout = 1000' \
+    '' \
+    '[character]' \
+    'success_symbol = "[❯](bold green)"' \
+    'error_symbol = "[❯](bold red)"' \
+    '' \
+    '[directory]' \
+    'truncation_length = 3' \
+    'truncate_to_repo = true' \
+    '' \
+    '[git_branch]' \
+    'symbol = " "' \
+    '' \
+    '[golang]' \
+    'symbol = " "' \
+    '' \
+    '[kubernetes]' \
+    'disabled = false' \
+    > /home/${USERNAME}/.config/starship.toml
+
+# ============================================================
+# 7. PYTHON CLI TOOLS
+# ============================================================
+
+USER ${USERNAME}
+
+RUN mkdir -p /home/${USERNAME}/.claude /home/${USERNAME}/.kube
+
+RUN pipx ensurepath \
+    && pipx install ansible-core \
+    && pipx install ansible-lint
+
+# ============================================================
+# 7b. CLAUDE CODE (native installer -> ~/.local/bin/claude)
+# ============================================================
+
+RUN curl -fsSL https://claude.ai/install.sh | bash
+
+# ============================================================
+# 8. WORKSPACE
+# ============================================================
+
+WORKDIR /workspace
+
+CMD ["/usr/bin/zsh"]
