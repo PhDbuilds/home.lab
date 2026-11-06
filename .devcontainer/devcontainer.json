@@ -1,0 +1,26 @@
+{
+  "name": "homelab-sandbox",
+  "build": {
+    "dockerfile": "Containerfile"
+  },
+
+  "workspaceFolder": "/workspace",
+  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+
+  "remoteUser": "dev",
+
+  "mounts": [
+    "source=homelab-claude,target=/home/dev/.claude,type=volume",
+    "source=${localEnv:HOME}/.kube/config,target=/home/dev/.kube/config,type=bind,readonly"
+  ],
+  "containerEnv": { "CLAUDE_CONFIG_DIR": "/home/dev/.claude" },
+
+  "postCreateCommand": "ansible-galaxy collection install -r ansible/requirements.yml",
+
+  "runArgs": [
+    "--userns=keep-id",
+    "--device=/dev/fuse",
+    "--security-opt=label=disable",
+    "--sysctl=net.ipv4.ping_group_range=1000 1000"
+  ]
+}
